@@ -117,27 +117,7 @@ On the 1,390-task corpus, arguments alone score above the combination. We attrib
 size, since the standard deviation there is more than double the larger corpus, and we quote the
 8,467-task result. [H]
 
-### 2.3 Held out by submission
-
-The tau2 numbers above use a random split. A deployed detector scores agents it never trained on,
-so we repeat the evaluation holding out whole submissions.
-
-| protocol | text | structural | combined |
-|---|---|---|---|
-| random | 0.9458 | 0.9230 | 0.9557 |
-| 30% of submissions held out, 10 seeds | 0.9244 +/- 0.0189 | 0.9067 +/- 0.0160 | 0.9347 +/- 0.0142 |
-| leave one submission out, 12 folds | 0.9339 +/- 0.0326 | 0.9146 +/- 0.0232 | 0.9447 +/- 0.0243 |
-
-Combined beats text on 11 of 12 held-out submissions. The worst fold is
-`claude-3-7-sonnet_anthropic_2024-06-20` at 0.8797, the oldest model and the one with the highest
-failure rate at 38.5%. [V, results/heldout.json]
-
-Precision does not transfer the way ranking does. At a 10% flag rate the combined detector falls
-from 0.6156 under a random split to 0.4861 +/- 0.1087 across held-out submissions, ranging 0.32 to
-0.65. The ordering generalises to unseen agents; the score scale does not. A deployed detector
-must have its threshold fitted locally rather than shipped fixed. [V, results/heldout.json]
-
-### 2.4 Prevalence is agent-dependent, not a constant
+### 2.3 Prevalence is agent-dependent, not a constant
 
 The reference work reports 75.8% for AppWorld self-assessing trajectories with explicit status
 claims [C, arXiv 2606.09863 abstract]. Across the 11 AppWorld submissions with at least 100
@@ -214,7 +194,93 @@ The effect on detector scores is small. Removing harness control tokens costs th
 0.8865. Both figures are seed 42 and predate the argument features.
 [V, results/corpus_audit.json ablations]
 
-## 5. Related work
+## 5. What a deployment would face
+
+Sections 2 and 3 measure a detector. This section measures the four things that decide whether one
+can be shipped. All four are on tau2 unless stated.
+
+### 5.1 Scoring agents it has never seen
+
+A deployed detector scores agents absent from its training data. Holding out whole submissions,
+the ranking survives.
+
+| protocol | text | structural | combined |
+|---|---|---|---|
+| random split | 0.9458 | 0.9230 | 0.9557 |
+| 30% of submissions held out, 10 seeds | 0.9244 +/- 0.0189 | 0.9067 +/- 0.0160 | 0.9347 +/- 0.0142 |
+| leave one submission out, 12 folds | 0.9339 +/- 0.0326 | 0.9146 +/- 0.0232 | 0.9447 +/- 0.0243 |
+
+Combined beats text on 11 of 12 held-out submissions. The worst fold is
+`claude-3-7-sonnet_anthropic_2024-06-20` at 0.8797, the oldest model and the one with the highest
+failure rate at 38.5%. [V, results/heldout.json]
+
+Precision does not survive in the same way. At a 10% flag rate the combined detector gives
+0.4861 +/- 0.1087 across held-out submissions, ranging 0.32 to 0.65.
+
+The cause is not instability. Across the twelve folds, the correlation between the held-out agent's
+own failure rate and the precision achieved on it is **r = 0.932**. Failure rate ranges 3.3% to
+18.8% and precision follows it from 0.2653 to 0.8784. Precision at a fixed flag rate is bounded by
+base rate over flag rate, so it moves with the deployment, not with the model.
+[V, results/heldout.json]
+
+The consequence for anything shipped: the ranking can be trained once and reused, the threshold
+cannot. It has to be fitted against the deployment's own prevalence.
+
+### 5.2 The feature set a real trace actually carries
+
+Our extractor reads fields specific to the benchmark: a `requestor` marking dual-control turns, the
+final message role, and a hand-written list of 22 state-changing tool names. OpenTelemetry GenAI
+carries none of those. It carries `gen_ai.tool.name`, `gen_ai.tool.call.arguments` and per-call
+error status, and every `gen_ai.*` attribute was still Development status in July 2026
+[C, OpenTelemetry semantic conventions registry].
+
+Restricting the extractor to those three fields:
+
+| variant | AUROC | P@10% |
+|---|---|---|
+| benchmark-native | 0.9230 +/- 0.0081 | 0.5150 |
+| three OTel fields, caller supplies the tool list | 0.9207 +/- 0.0071 | 0.5091 |
+| three OTel fields, no tool list, every call scored | **0.9254 +/- 0.0055** | 0.5208 |
+
+DeLong on the confirmatory split with Holm across three comparisons: native versus zero-config is
++0.0045 at p 0.232, not significant. Native versus caller-supplied-list is significant at p_holm
+7.69e-03, and caller-list versus zero-config is significant at p_holm 6.82e-03, both in favour of
+using no list. [V, results/portability.json]
+
+Two results follow. The portable feature set matches the benchmark-native one, so nothing is lost
+by reading only what a standard trace provides. And the hand-written list of state-changing tools
+was making the detector worse: scoring every call, including read-only ones, is better than
+filtering to the ones we judged relevant. The most portable configuration is also the best, and it
+has nothing to configure.
+
+### 5.3 Cost
+
+Measured on 500 trajectories of median 28 messages, single-threaded CPU, feature extraction
+included:
+
+| stage | mean | p50 | p95 | max |
+|---|---|---|---|---|
+| extract | 0.065 | 0.059 | 0.121 | 0.307 |
+| score | 0.395 | 0.379 | 0.507 | 0.873 |
+| end to end | 0.460 | 0.438 | 0.627 | 1.180 |
+
+Milliseconds. Batched, 0.124 ms per trajectory. [V, results/deployment.json]
+
+### 5.4 No model serves both benchmarks
+
+A detector trained on tau2 scores AppWorld at 0.4948. Trained on AppWorld it scores tau2 at 0.5213.
+Both are chance. The two feature vocabularies share 18 tokens out of 11,729 and 30,000, and all 18
+are call-count buckets or incidental value matches such as `val:city=seattle`.
+[V, results/deployment.json]
+
+This is not a degenerate comparison. Every one of the 8,467 AppWorld trajectories contains at least
+one feature the tau2 vectorizer recognises, so the model produces real scores rather than a
+constant. The overlap exists and carries no signal.
+
+The consequence: there is no useful pretrained model for this task. A detector is fitted per
+environment, from that environment's own labelled runs.
+
+## 6. Related work
 
 Tool-call arguments are a well-studied source of agent failure. Our contribution is narrower than
 that literature and every qualifier below is load-bearing.
@@ -251,7 +317,7 @@ Stated precisely, our claim is: **tool-call argument features predict task-level
 than tool-name or endpoint features, at inference time, without a gold reference, on two
 multi-turn agent benchmarks.**
 
-## 6. Limitations
+## 7. Limitations
 
 **Scope.** This work is about a claim of task completion contradicted by verifiable environment
 state. It says nothing about factual hallucination, reasoning quality, or research agents that
@@ -260,6 +326,17 @@ such ground truth exists for a research agent writing a summary, and we make no 
 
 **One attack surface.** The adversarial results exist only on tau2-bench. AppWorld has no
 natural-language channel to attack.
+
+**No comparison against an LLM judge.** Prior work reports judges at AUROC 0.65 on tau2 and 0.54 on
+AppWorld [C, arXiv 2606.09863]. We did not reproduce that and make no claim about judges. Every
+judge number in this area that we might cite is someone else's measurement.
+
+**Content capture.** The portable feature set depends on `gen_ai.tool.call.arguments`, which
+OpenTelemetry records only when privacy policy permits. A deployment with content capture disabled
+has nothing for this method to read.
+
+**Convention stability.** Every `gen_ai.*` attribute was Development status as of July 2026, with
+no stability guarantee on names [C, OpenTelemetry semantic conventions registry].
 
 **Attacker strength.** Both rewriters are deterministic and rule-based. A model-generated rewrite
 would be more fluent and is untested. Our results are therefore a floor on the text detector's
@@ -274,7 +351,7 @@ same sample. Direct numeric comparison with the reference AUROC is not valid.
 redistribution of them or their derivatives be in encrypted form. Extracted trajectories cannot be
 shipped.
 
-## 7. Reproduction
+## 8. Reproduction
 
 Corpus pin, which the reference work does not have:
 
@@ -286,23 +363,25 @@ Corpus pin, which the reference work does not have:
 Environment: python 3.12.3, scikit-learn 1.5.2, numpy 2.5.3. Every table above is produced by one
 committed script writing one JSON file under `results/`.
 
-## 8. Scripts
+## 9. Scripts
 
 | section | script | results file |
 |---|---|---|
 | §1 mechanism | `scripts/mechanism.py` | `results/mechanism.json` |
 | §2.1 tau2 detectors | `scripts/ablation.py`, `scripts/detectors.py` | `results/ablation.json`, `results/detectors.json` |
 | §2.2 AppWorld | `scripts/appworld_detectors.py` | `results/appworld.json` |
-| §2.3 held out | `scripts/heldout.py` | `results/heldout.json` |
-| §2.4 prevalence | `scripts/appworld_prevalence.py` | `results/appworld_prevalence.json` |
+| §2.3 prevalence | `scripts/appworld_prevalence.py` | `results/appworld_prevalence.json` |
 | §3 robustness | `scripts/robustness.py`, `scripts/adversarial.py` | `results/robustness.json`, `results/adversarial.json` |
 | §4.1 corpus | `scripts/corpus_provenance.py --check-timestamps` | `results/corpus_provenance.json` |
 | §4.2 auto-pass | `scripts/corpus_audit.py` | `results/corpus_audit.json` |
+| §5.1 held out | `scripts/heldout.py` | `results/heldout.json` |
+| §5.2 portability | `scripts/portability.py` | `results/portability.json` |
+| §5.3 and §5.4 | `scripts/deployment.py` | `results/deployment.json` |
 
 Data acquisition: `scripts/fetch_tau2.py` for tau2, and for AppWorld a git-lfs clone of
 `StonyBrookNLP/appworld-leaderboard` unpacked with `appworld unpack`.
 
-## 9. Open
+## 10. Open
 
 - Does the finding hold with a model-generated attacker rather than rule-based rewriters?
 - Does it hold on a third benchmark with a different action representation?

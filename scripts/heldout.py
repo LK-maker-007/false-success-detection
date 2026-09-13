@@ -93,6 +93,19 @@ def main() -> None:
         s = spread([row[key] for row in loso.values()])
         print(f"\n  LOSO {key:<12}{s['mean']:.4f} +/- {s['std']:.4f}   [{s['min']:.4f}, {s['max']:.4f}]", flush=True)
 
+    # Precision at a fixed flag rate is bounded by the held-out agent's own failure rate, so it
+    # moves with base rate rather than with detector quality. This is why a shipped threshold
+    # cannot be fixed: it has to be fitted against the deployment's own prevalence.
+    rates = np.array([row["fs"] / row["n"] for row in loso.values()])
+    precisions = np.array([row["combined_p_at_10"] for row in loso.values()])
+    correlation = float(np.corrcoef(rates, precisions)[0, 1])
+    print(f"\n  fold FS rate vs P@10% correlation: r = {correlation:.3f}", flush=True)
+    print(
+        f"  fold FS rate range {rates.min():.1%} to {rates.max():.1%}, "
+        f"P@10% range {precisions.min():.4f} to {precisions.max():.4f}",
+        flush=True,
+    )
+
     wins = sum(1 for row in loso.values() if row["combined"] > row["text"])
     print(f"\n  combined beats text on {wins}/{len(loso)} held-out submissions")
 
@@ -100,6 +113,7 @@ def main() -> None:
         "group_shuffle_30pct": {k: spread(v) for k, v in shuffle_runs.items()},
         "leave_one_submission_out": loso,
         "loso_summary": {k: spread([r[k] for r in loso.values()]) for k in ("text", "structural", "combined")},
+        "loso_fs_rate_vs_precision_r": round(correlation, 4),
         "loso_combined_beats_text": wins,
         "loso_folds": len(loso),
         "skipped_single_class": skipped,

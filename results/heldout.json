@@ -150,6 +150,7 @@
    "seeds": 12
   }
  },
+ "loso_fs_rate_vs_precision_r": 0.9318,
  "loso_combined_beats_text": 11,
  "loso_folds": 12,
  "skipped_single_class": {},
