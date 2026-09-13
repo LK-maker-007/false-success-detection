@@ -1,0 +1,70 @@
+{
+ "latency": {
+  "extract": {
+   "mean_ms": 0.065,
+   "p50_ms": 0.059,
+   "p95_ms": 0.121,
+   "max_ms": 0.307
+  },
+  "score": {
+   "mean_ms": 0.395,
+   "p50_ms": 0.379,
+   "p95_ms": 0.507,
+   "max_ms": 0.873
+  },
+  "end_to_end": {
+   "mean_ms": 0.46,
+   "p50_ms": 0.438,
+   "p95_ms": 0.627,
+   "max_ms": 1.18
+  }
+ },
+ "latency_batched_per_trajectory_ms": 0.124,
+ "latency_sample": {
+  "n": 500,
+  "median_messages": 28
+ },
+ "cross_benchmark": {
+  "tau2_vocab": 11729,
+  "appworld_vocab": 30000,
+  "shared_features": 18,
+  "shared_examples": [
+   "ncalls:0",
+   "ncalls:1",
+   "ncalls:10",
+   "ncalls:11",
+   "ncalls:12",
+   "ncalls:2",
+   "ncalls:3",
+   "ncalls:4",
+   "ncalls:5",
+   "ncalls:6",
+   "ncalls:7",
+   "ncalls:8",
+   "ncalls:9",
+   "num:amount=10",
+   "num:amount=5",
+   "val:city=seattle",
+   "val:last_name=brown",
+   "val:last_name=wilson"
+  ],
+  "tau2_model_on_appworld_auroc": 0.4948,
+  "appworld_model_on_tau2_auroc": 0.5213,
+  "appworld_rows_with_no_known_feature": 0,
+  "appworld_rows": 8467
+ },
+ "provenance": {
+  "data_dir": "data/tau2",
+  "appworld_dir": "data/appworld/leaderboard/experiments/outputs",
+  "message_counts": {
+   "26": 64,
+   "24": 52,
+   "34": 43,
+   "28": 40,
+   "32": 38
+  },
+  "sklearn": "1.5.2",
+  "numpy": "2.5.3",
+  "python": "3.12.3"
+ }
+}

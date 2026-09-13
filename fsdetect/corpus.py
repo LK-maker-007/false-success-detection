@@ -144,6 +144,42 @@ def argument_tokens(messages: list[dict]) -> str:
     return " ".join(tokens)
 
 
+def otel_tokens(messages: list[dict], mutating: frozenset[str] | None = None) -> str:
+    # Restricted to what OpenTelemetry GenAI actually carries: gen_ai.tool.name,
+    # gen_ai.tool.call.arguments, and per-call error status. No requestor, no final-role, no
+    # tau2 vocabulary. `mutating` is the caller's own list; None means score every call.
+    tokens: list[str] = []
+    pending: dict[str, str] = {}
+    for message in messages:
+        for call in message.get("tool_calls") or []:
+            name = (call.get("function") or {}).get("name") or call.get("name") or "unknown"
+            pending[call.get("id")] = name
+            tokens.append(f"tool:{name}")
+            if mutating is not None and name not in mutating:
+                continue
+            for key, raw in (call.get("arguments") or {}).items():
+                tokens.append(f"argk:{name}:{key}")
+                if isinstance(raw, list):
+                    tokens.append(f"len:{name}:{key}={min(len(raw), 5)}")
+                for leaf_key, value in _leaves(raw, key):
+                    if isinstance(value, bool):
+                        tokens.append(f"val:{leaf_key}={value}")
+                    elif isinstance(value, (int, float)):
+                        tokens.append(f"num:{leaf_key}={min(int(value), 10)}")
+                    elif isinstance(value, str) and value:
+                        payment = PAYMENT_RE.match(value)
+                        if payment:
+                            tokens.append(f"pay:{payment.group(1)}")
+                        if not ID_RE.match(value) and len(value) <= 24:
+                            tokens.append(f"val:{leaf_key}={value.lower().replace(' ', '_')}")
+        if message.get("role") == "tool":
+            name = pending.get(message.get("id"), "orphan")
+            tokens.append(f"err:{name}" if message.get("error") else f"ok:{name}")
+    tokens.append(f"ncalls:{min(sum(1 for t in tokens if t.startswith('tool:')), 20)}")
+    tokens.append(f"nerr:{min(sum(1 for t in tokens if t.startswith('err:')), 10)}")
+    return " ".join(tokens)
+
+
 # Operation a closing message claims, mapped to the tools that could have performed it. Used to
 # test whether false successes are claims without a matching action. They are not; see
 # scripts/mechanism.py.
@@ -276,6 +312,8 @@ def load(data_dir: Path) -> tuple[list[Record], dict[str, int]]:
                     "actions": action_tokens(messages),
                     "arguments": argument_tokens(messages),
                     "structural": f"{action_tokens(messages)} {argument_tokens(messages)}",
+                    "otel_with_tool_list": otel_tokens(messages, MUTATING_TOOLS),
+                    "otel_zero_config": otel_tokens(messages),
                     "succeeded": successful_tools(messages),
                     "reward_info": sim.get("reward_info") or {},
                 }

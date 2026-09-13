@@ -1,0 +1,122 @@
+{
+ "variants": {
+  "full_structural": "tau2-native: requestor, final role, hardcoded mutating list, arguments",
+  "otel_with_tool_list": "gen_ai.tool.name, gen_ai.tool.call.arguments, error status, caller's mutating list",
+  "otel_zero_config": "the same three fields, no mutating list, every call scored"
+ },
+ "auroc": {
+  "full_structural": {
+   "mean": 0.923,
+   "std": 0.0081,
+   "min": 0.9101,
+   "max": 0.9377,
+   "seeds": 10
+  },
+  "otel_with_tool_list": {
+   "mean": 0.9207,
+   "std": 0.0071,
+   "min": 0.9119,
+   "max": 0.9339,
+   "seeds": 10
+  },
+  "otel_zero_config": {
+   "mean": 0.9254,
+   "std": 0.0055,
+   "min": 0.9156,
+   "max": 0.9356,
+   "seeds": 10
+  }
+ },
+ "precision_at_10pct": {
+  "full_structural": {
+   "mean": 0.515,
+   "std": 0.0141,
+   "min": 0.4935,
+   "max": 0.539,
+   "seeds": 10
+  },
+  "otel_with_tool_list": {
+   "mean": 0.5091,
+   "std": 0.024,
+   "min": 0.474,
+   "max": 0.539,
+   "seeds": 10
+  },
+  "otel_zero_config": {
+   "mean": 0.5208,
+   "std": 0.0222,
+   "min": 0.4935,
+   "max": 0.5519,
+   "seeds": 10
+  }
+ },
+ "delong_holm": {
+  "full_vs_otel_with_tool_list": {
+   "auc_a": 0.9216,
+   "auc_b": 0.9162,
+   "diff": 0.0054,
+   "se": 0.0019,
+   "ci95": [
+    0.0017,
+    0.009
+   ],
+   "z": 2.8905,
+   "p": 0.0038463853006836628,
+   "p_holm": 0.0076927706013673255,
+   "significant_at_0.05": true
+  },
+  "full_vs_otel_zero_config": {
+   "auc_a": 0.9216,
+   "auc_b": 0.926,
+   "diff": -0.0045,
+   "se": 0.0037,
+   "ci95": [
+    -0.0117,
+    0.0028
+   ],
+   "z": -1.1954,
+   "p": 0.23191488828581963,
+   "p_holm": 0.23191488828581963,
+   "significant_at_0.05": false
+  },
+  "otel_with_tool_list_vs_zero_config": {
+   "auc_a": 0.9162,
+   "auc_b": 0.926,
+   "diff": -0.0098,
+   "se": 0.0032,
+   "ci95": [
+    -0.0161,
+    -0.0035
+   ],
+   "z": -3.052,
+   "p": 0.002272880816975324,
+   "p_holm": 0.006818642450925972,
+   "significant_at_0.05": true
+  }
+ },
+ "mutating_tool_list_size": 22,
+ "provenance": {
+  "seeds": [
+   42,
+   43,
+   44,
+   45,
+   46,
+   47,
+   48,
+   49,
+   50,
+   51
+  ],
+  "data_dir": "data/tau2",
+  "records": 12859,
+  "dropped": {
+   "missing_reward": 0,
+   "no_messages": 107,
+   "no_assistant_turn": 0
+  },
+  "sklearn": "1.5.2",
+  "numpy": "2.5.3",
+  "python": "3.12.3"
+ }
+}
