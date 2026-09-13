@@ -1,0 +1,231 @@
+# What false success in LLM agents actually is, and what detects it
+
+Draft. Every number carries [V] verified this session with the script that produced it, [C] cited
+to a published source, or [H] hypothesis. Untagged numbers are defects.
+
+## Abstract
+
+An LLM agent fails silently when it closes by asserting a task is complete and the environment
+state disagrees. On two agent benchmarks we find that this failure is almost never an agent
+claiming an action it never attempted. It is an agent performing the right operation with the
+wrong arguments, or completing some of the required steps. We show that features taken from
+tool-call arguments detect it better than features taken from tool names or API endpoints, on
+tau2-bench (+0.031 AUROC, 10/10 seeds) and on AppWorld (+0.036 AUROC, 10/10 seeds, held out by
+submission). We also report two defects in how the field measures this: the corpus behind the
+reference result cannot be reconstructed from the source it names, and tau2-bench's reward
+auto-passes a gate on 88% of airline simulations.
+
+## 1. What false success is
+
+Prior work defines false success as a trajectory whose final message asserts a completed action
+that the tool-call history and reward indicate did not occur [C, arXiv 2606.09863 §1]. That
+phrasing invites a natural detector: check whether the claimed action appears in the trace. It
+does not work, and the reason is the paper's most useful finding.
+
+Across 851 false-success trajectories in our tau2-bench corpus, the operation the closing message
+claims is almost always present and successful in the trace. Among trajectories that claim an
+operation, the rate of having no matching successful call is 6.0% for false successes and 14.6%
+for true successes, a ratio of 0.41. The signal is not weak. It is inverted.
+[V, results/mechanism.json]
+
+The reward record says why. Of those 851 trajectories, 93.1% fail the database check and 77.1%
+fail at least one action check, while the communicate gate passes in most cases. 85.1% fail on the
+database check alone. [V, results/mechanism.json]
+
+Reading examples makes the mechanism concrete. In airline task 16 the user states they are happy
+with the original payment method for a refund; the agent refunds to a gift card, the
+`update_reservation_flights` call succeeds, and the database check fails. In airline task 9 the
+user asks for two reservations cancelled and a third changed to a nonstop flight; the agent
+cancels the two, announces success, and both `cancel_reservation` calls succeed.
+
+So the agent calls the right tool. The arguments or the completeness are wrong. This explains
+three otherwise puzzling observations at once, and it predicts where a detector should look.
+
+## 2. Arguments detect it, names do not
+
+### 2.1 tau2-bench
+
+Corpus: 12,859 trajectories from 12 leaderboard submissions across airline, retail and telecom.
+Positives are the 851 failures whose closing asserts completion, negatives the 9,417 true
+successes. Honest-failure and ambiguous trajectories are excluded, following the reference
+protocol. Stratified 70/15/15 split, TF-IDF and logistic regression, seeds 42 to 51.
+[V, results/detectors.json, results/ablation.json]
+
+| features | AUROC |
+|---|---|
+| tool names only | 0.8924 +/- 0.0095 |
+| call arguments only | 0.8999 +/- 0.0118 |
+| both (structural) | 0.9230 +/- 0.0081 |
+| closing message (text) | 0.9458 +/- 0.0074 |
+| text + structural | **0.9557 +/- 0.0064** |
+
+[V, results/ablation.json]
+
+Adding arguments to tool names is worth +0.031. Adding structural features to the text detector
+is worth +0.0107, CI95 [0.0029, 0.0189], and wins on 10 of 10 seeds. Precision at a 10% flag rate
+rises from 0.5708 to 0.6156. [V, results/ablation.json]
+
+The gain is not extra model capacity. The text vectorizer saturates at 37,558 features, and
+raising its cap from 30,000 to 60,000 to 120,000 gives 0.9458, 0.9455, 0.9455.
+[V, results/ablation.json capacity_control]
+
+Removing one structural family at a time from the full 0.9230: enum values are worth the most
+(0.9135 without), then entity counts (0.9197), numeric and list features (0.9195), payment method
+type (0.9212). Argument key names are neutral (0.9249 without, within noise).
+[V, results/ablation.json structural_families_removed]
+
+### 2.2 AppWorld
+
+A second benchmark, coding agents rather than customer service, and no natural-language closing at
+all. Labelling needs no regex: false success is `complete_task(status="success")` with
+`evaluation.success == False`.
+
+Split is by submission, not by task, because AppWorld tasks recur across submissions and a random
+split would place the same task's trace on both sides. This is stricter than the tau2 protocol.
+
+| corpus | endpoints | arguments | both | gap |
+|---|---|---|---|---|
+| any completion claim, 8,467 tasks, 43 submissions | 0.8112 +/- 0.0275 | 0.8383 +/- 0.0252 | **0.8450 +/- 0.0254** | +0.0363 CI95 [0.0269, 0.0457] |
+| explicit status, 1,390 tasks, 13 submissions | 0.7892 +/- 0.0598 | 0.8325 +/- 0.0538 | 0.8093 +/- 0.0581 | +0.0294 CI95 [0.0020, 0.0601] |
+
+Both corpora: 10 of 10 seeds. Precision at a 10% flag rate on the larger corpus rises from 0.9363
+to 0.9595. [V, results/appworld.json]
+
+On the 1,390-task corpus, arguments alone score above the combination. We attribute this to sample
+size, since the standard deviation there is more than double the larger corpus, and we quote the
+8,467-task result. [H]
+
+### 2.3 Prevalence is agent-dependent, not a constant
+
+The reference work reports 75.8% for AppWorld self-assessing trajectories with explicit status
+claims [C, arXiv 2606.09863 abstract]. Across the 11 AppWorld submissions with at least 100
+explicit success claims, the false-success rate among those claims ranges from 19.5% to 82.9%,
+median 65.2%, pooled 55.9%. [V, results/appworld_prevalence.json]
+
+A single prevalence figure for a benchmark is therefore not meaningful. The reference value sits
+inside our range and above our pooled figure. The four-fold spread across agents is the more
+useful observation, and it means prevalence claims should be reported per agent.
+
+## 3. Robustness, on tau2 only
+
+The reference work reports that rewriting honest-failure closings in confident style flips its
+detector on 10 of 50 cases [C, arXiv 2606.09863 Appendix H]. We extend this and reach a different
+conclusion about what it means.
+
+We built two rewriters. `swap_lexicon` substitutes the trigger lexicon for equivalent phrasing and
+keeps every fact, producing 851 distinct outputs from 851 inputs, removing the trigger from 90.6%
+and preserving 0.943 mean character similarity. `assert_completion` excises admission sentences
+and prepends a completion claim built from the message's own entity.
+
+Under `swap_lexicon` the text detector falls from 0.9458 to 0.9212, and the combined detector from
+0.9557 to 0.9430. The combined detector loses roughly half as much and beats text on 10 of 10
+seeds under attack, +0.0194 CI95 [0.0104, 0.0284]. Precision at a 10% flag rate under attack is
+0.4818 for text and 0.5805 for combined. [V, results/ablation.json]
+
+Two negative results belong here.
+
+First, the text detector is not a lexical rule. Removing 90.6% of its trigger vocabulary while
+keeping the message costs 2.5 AUROC points. Appendix H's 20% flip rate invites the opposite
+reading. [V, results/ablation.json]
+
+Second, template-based rewrites are not a valid attack. Replacing a 91-word message with one of
+three generic sentences drops the text detector to 0.6728, but that measures distribution shift,
+not evasion. We report it only as a caution against the method. [V, results/robustness.json]
+
+`assert_completion` flips the detector on 13.3% +/- 1.5% of 218 substantive honest failures, each
+rewritten into a genuine false success with its body intact. The detector misses 86.7% of them.
+[V, results/robustness.json]
+
+## 4. Two measurement defects
+
+### 4.1 The reference corpus cannot be reconstructed
+
+The reference work states its corpus is 9,876 tau2-bench trajectories, 8,146 successful and 1,730
+failures, obtained from Sierra's public leaderboard [C, arXiv 2606.09863 §3.1]. That composition
+does not exist in the leaderboard data.
+
+The leaderboard at the paper's date is `manifest.json` at tau2-bench commit `c7e436f33`. Exactly
+12 listed submissions carry airline, retail or telecom trajectories. All 37 of their files return
+a `Last-Modified` of 2026-03-23 and none was touched after June, so they are the same bytes the
+authors read. No subset of whole submissions matches. An exhaustive meet-in-the-middle over all 37
+files returns zero solutions for (8146, 1730). No `termination_reason` slice reaches the required
+rate: user_stop 26.5%, agent_stop 27.9%, max_steps 100%. The pooled failure rate is 26.8% against
+the required 17.5%. [V, results/corpus_provenance.json]
+
+We do not claim an error in the reported numbers. We claim the corpus is not reconstructible from
+the stated source, which makes the result unverifiable by anyone without the authors' data.
+
+### 4.2 tau2-bench rewards auto-pass
+
+tau2-bench issue #384 reports that `evaluator_communicate.py:28` and
+`evaluator_nl_assertions.py:38` return reward 1.0 when the criteria field is empty, and that 23
+airline and 6 retail tasks are scored on inaction alone [C, tau2-bench issue #384].
+
+In the shipped data, 88.0% of airline simulations carry a COMMUNICATE component with no criteria
+to evaluate, contributing 1.0 to the reward breakdown while measuring nothing. 46.0% of airline
+simulations are on the flagged task list, and 80.4% of those score full reward against a 68.9%
+base rate. Retail is affected less: 31.4% empty gate, 5.3% on the list, 89.2% full reward there
+against a 76.6% base. [V, results/corpus_audit.json issue_384_auto_pass]
+
+The effect on detector scores is small. Removing harness control tokens costs the text detector
+0.0084 AUROC, from 0.9438 to 0.9354, and costs a tool-names-only detector 0.0000, unchanged at
+0.8865. Both figures are seed 42 and predate the argument features.
+[V, results/corpus_audit.json ablations]
+
+## 5. Limitations
+
+**Scope.** This work is about a claim of task completion contradicted by verifiable environment
+state. It says nothing about factual hallucination, reasoning quality, or research agents that
+search and then fabricate. Our method requires a programmatic ground truth to diff against. No
+such ground truth exists for a research agent writing a summary, and we make no claim there.
+
+**One attack surface.** The adversarial results exist only on tau2-bench. AppWorld has no
+natural-language channel to attack.
+
+**Attacker strength.** Both rewriters are deterministic and rule-based. A model-generated rewrite
+would be more fluent and is untested. Our results are therefore a floor on the text detector's
+fragility, not an estimate of it. [H]
+
+**Label quality.** Every AppWorld and tau2 number is scored against labels with the defects in §4.
+
+**Corpus.** Our tau2 corpus is 12,859 trajectories against the reference 9,876, and is not the
+same sample. Direct numeric comparison with the reference AUROC is not valid.
+
+**Licence.** AppWorld experiment outputs are Apache 2.0 with an added requirement that public
+redistribution of them or their derivatives be in encrypted form. Extracted trajectories cannot be
+shipped.
+
+## 6. Reproduction
+
+Corpus pin, which the reference work does not have:
+
+- tau2: S3 bucket `sierra-tau-bench-public`, keys in `data/tau2/_bucket_keys.json`, all trajectory
+  files `Last-Modified 2026-03-23`, leaderboard membership at tau2-bench commit `c7e436f33`
+- AppWorld: `StonyBrookNLP/appworld-leaderboard`, 48 bundles under git-lfs, unpacked with
+  `appworld` 0.1.3.post1
+
+Environment: python 3.12.3, scikit-learn 1.5.2, numpy 2.5.3. Every table above is produced by one
+committed script writing one JSON file under `results/`.
+
+## 7. Scripts
+
+| section | script | results file |
+|---|---|---|
+| §1 mechanism | `scripts/mechanism.py` | `results/mechanism.json` |
+| §2.1 tau2 detectors | `scripts/ablation.py`, `scripts/detectors.py` | `results/ablation.json`, `results/detectors.json` |
+| §2.2 AppWorld | `scripts/appworld_detectors.py` | `results/appworld.json` |
+| §2.3 prevalence | `scripts/appworld_prevalence.py` | `results/appworld_prevalence.json` |
+| §3 robustness | `scripts/robustness.py`, `scripts/adversarial.py` | `results/robustness.json`, `results/adversarial.json` |
+| §4.1 corpus | `scripts/corpus_provenance.py --check-timestamps` | `results/corpus_provenance.json` |
+| §4.2 auto-pass | `scripts/corpus_audit.py` | `results/corpus_audit.json` |
+
+Data acquisition: `scripts/fetch_tau2.py` for tau2, and for AppWorld a git-lfs clone of
+`StonyBrookNLP/appworld-leaderboard` unpacked with `appworld unpack`.
+
+## 8. Open
+
+- Does the finding hold with a model-generated attacker rather than rule-based rewriters?
+- Does it hold on a third benchmark with a different action representation?
+- The abstract form of the result is that fine-grained action content predicts failure better than
+  coarse action shape. Whether that transfers to agents whose actions are searches rather than API
+  calls is untested and is a separate project. [H]

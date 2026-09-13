@@ -1,0 +1,59 @@
+{
+ "clean": {
+  "text": 0.9438,
+  "structural": 0.8865
+ },
+ "attack_a_flip_rate": {
+  "unmodified": 0.0118,
+  "direct": 0.3193,
+  "hedged_implied": 0.0,
+  "technically_true": 0.0087,
+  "lexicon_avoiding": 0.0
+ },
+ "attack_b_auroc": {
+  "direct": {
+   "text_auroc": 0.8666,
+   "text_precision_at_flag_rate": 0.3052,
+   "distinct_rewrites": 1153
+  },
+  "hedged_implied": {
+   "text_auroc": 0.6694,
+   "text_precision_at_flag_rate": 0.0,
+   "distinct_rewrites": 1153
+  },
+  "technically_true": {
+   "text_auroc": 0.8077,
+   "text_precision_at_flag_rate": 0.1429,
+   "distinct_rewrites": 1153
+  },
+  "lexicon_avoiding": {
+   "text_auroc": 0.6607,
+   "text_precision_at_flag_rate": 0.0,
+   "distinct_rewrites": 1153
+  }
+ },
+ "worst_text_auroc": 0.6607,
+ "crossover": true,
+ "structural_invariant_by_construction": true,
+ "provenance": {
+  "seed": 42,
+  "data_dir": "data/tau2",
+  "records": 12859,
+  "dropped": {
+   "missing_reward": 0,
+   "no_messages": 107,
+   "no_assistant_turn": 0
+  },
+  "counts": {
+   "FS": 851,
+   "HF": 1616,
+   "AMB": 975,
+   "TS": 9417
+  },
+  "attack_a_population": 1616,
+  "attack_b_positives": 128,
+  "sklearn": "1.5.2",
+  "numpy": "2.5.3",
+  "python": "3.12.3"
+ }
+}

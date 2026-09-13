@@ -1,0 +1,136 @@
+{
+ "per_submission": {
+  "cuga_test_challenge": {
+   "claimed_success": 356,
+   "false_success": 116,
+   "true_success": 240,
+   "all_failures": 177,
+   "fs_rate_among_success_claims": 0.3258,
+   "fs_share_of_all_failures": 0.6554
+  },
+  "cuga_test_normal": {
+   "claimed_success": 155,
+   "false_success": 32,
+   "true_success": 123,
+   "all_failures": 45,
+   "fs_rate_among_success_claims": 0.2065,
+   "fs_share_of_all_failures": 0.7111
+  },
+  "full_code_refl_deepseekcoder_test_challenge": {
+   "claimed_success": 130,
+   "false_success": 106,
+   "true_success": 24,
+   "all_failures": 393,
+   "fs_rate_among_success_claims": 0.8154,
+   "fs_share_of_all_failures": 0.2697
+  },
+  "full_code_refl_deepseekcoder_test_normal": {
+   "claimed_success": 104,
+   "false_success": 82,
+   "true_success": 22,
+   "all_failures": 146,
+   "fs_rate_among_success_claims": 0.7885,
+   "fs_share_of_all_failures": 0.5616
+  },
+  "full_code_refl_gpt4o_test_challenge": {
+   "claimed_success": 221,
+   "false_success": 141,
+   "true_success": 80,
+   "all_failures": 337,
+   "fs_rate_among_success_claims": 0.638,
+   "fs_share_of_all_failures": 0.4184
+  },
+  "full_code_refl_gpt4o_test_normal": {
+   "claimed_success": 138,
+   "false_success": 81,
+   "true_success": 57,
+   "all_failures": 111,
+   "fs_rate_among_success_claims": 0.587,
+   "fs_share_of_all_failures": 0.7297
+  },
+  "full_code_refl_gpt4turbo_test_challenge": {
+   "claimed_success": 203,
+   "false_success": 151,
+   "true_success": 52,
+   "all_failures": 365,
+   "fs_rate_among_success_claims": 0.7438,
+   "fs_share_of_all_failures": 0.4137
+  },
+  "full_code_refl_gpt4turbo_test_normal": {
+   "claimed_success": 140,
+   "false_success": 97,
+   "true_success": 43,
+   "all_failures": 125,
+   "fs_rate_among_success_claims": 0.6929,
+   "fs_share_of_all_failures": 0.776
+  },
+  "full_code_refl_llama3_test_challenge": {
+   "claimed_success": 170,
+   "false_success": 141,
+   "true_success": 29,
+   "all_failures": 388,
+   "fs_rate_among_success_claims": 0.8294,
+   "fs_share_of_all_failures": 0.3634
+  },
+  "full_code_refl_llama3_test_normal": {
+   "claimed_success": 118,
+   "false_success": 77,
+   "true_success": 41,
+   "all_failures": 127,
+   "fs_rate_among_success_claims": 0.6525,
+   "fs_share_of_all_failures": 0.6063
+  },
+  "ipfuncall_gpt4o_test_challenge": {
+   "claimed_success": 3,
+   "false_success": 3,
+   "true_success": 0,
+   "all_failures": 342,
+   "fs_rate_among_success_claims": 1.0,
+   "fs_share_of_all_failures": 0.0088
+  },
+  "ipfuncall_gpt4o_test_normal": {
+   "claimed_success": 2,
+   "false_success": 2,
+   "true_success": 0,
+   "all_failures": 114,
+   "fs_rate_among_success_claims": 1.0,
+   "fs_share_of_all_failures": 0.0175
+  },
+  "ipfuncall_gpt4turbo_test_challenge": {
+   "claimed_success": 1,
+   "false_success": 1,
+   "true_success": 0,
+   "all_failures": 356,
+   "fs_rate_among_success_claims": 1.0,
+   "fs_share_of_all_failures": 0.0028
+  },
+  "plan_exec_gpt4o_test_challenge": {
+   "claimed_success": 1,
+   "false_success": 1,
+   "true_success": 0,
+   "all_failures": 335,
+   "fs_rate_among_success_claims": 1.0,
+   "fs_share_of_all_failures": 0.003
+  },
+  "rooagi_agentbuilder_memtune_rl_gptoss_20b_test_normal": {
+   "claimed_success": 159,
+   "false_success": 31,
+   "true_success": 128,
+   "all_failures": 40,
+   "fs_rate_among_success_claims": 0.195,
+   "fs_share_of_all_failures": 0.775
+  }
+ },
+ "pooled": {
+  "submissions_with_explicit_claims": 15,
+  "claimed_success": 1901,
+  "false_success": 1062,
+  "fs_rate_among_success_claims": 0.5587,
+  "all_failures": 3401,
+  "fs_share_of_all_failures": 0.3123
+ },
+ "provenance": {
+  "data_dir": "data/appworld/leaderboard/experiments/outputs",
+  "python": "3.12.3"
+ }
+}

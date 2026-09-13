@@ -1,0 +1,51 @@
+{
+ "claim_consistency": {
+  "FS": {
+   "trajectories": 851,
+   "claiming_an_operation": 817,
+   "claim_without_matching_call": 49,
+   "unsupported_rate": 0.06
+  },
+  "TS": {
+   "trajectories": 9417,
+   "claiming_an_operation": 4286,
+   "claim_without_matching_call": 625,
+   "unsupported_rate": 0.1458
+  }
+ },
+ "fs_over_ts_unsupported_ratio": 0.4115,
+ "reward_components_failing": {
+  "DB": 724,
+  "COMMUNICATE": 52,
+  "COMMUNICATE+DB": 41,
+  "DB+NL_ASSERTION": 14,
+  "ENV_ASSERTION": 7,
+  "NL_ASSERTION": 6,
+  "ACTION+ENV_ASSERTION": 4,
+  "ACTION": 2,
+  "none_recorded": 1
+ },
+ "individual_checks_failing": {
+  "db_check": 792,
+  "nl_assertion": 253,
+  "communicate_check": 109,
+  "action_check": 656
+ },
+ "false_successes": 851,
+ "provenance": {
+  "data_dir": "data/tau2",
+  "records": 12859,
+  "dropped": {
+   "missing_reward": 0,
+   "no_messages": 107,
+   "no_assistant_turn": 0
+  },
+  "counts": {
+   "FS": 851,
+   "HF": 1616,
+   "AMB": 975,
+   "TS": 9417
+  },
+  "python": "3.12.3"
+ }
+}

@@ -1,0 +1,160 @@
+{
+ "closing_length_by_class": {
+  "FS": {
+   "n": 851,
+   "mean_words": 91.3,
+   "median_words": 80,
+   "p10": 47,
+   "p90": 149,
+   "max": 554,
+   "at_most_3_words": 0,
+   "degenerate": 0
+  },
+  "HF": {
+   "n": 1616,
+   "mean_words": 33.9,
+   "median_words": 11,
+   "p10": 11,
+   "p90": 101,
+   "max": 689,
+   "at_most_3_words": 0,
+   "degenerate": 1398
+  },
+  "AMB": {
+   "n": 975,
+   "mean_words": 73.3,
+   "median_words": 65,
+   "p10": 1,
+   "p90": 163,
+   "max": 454,
+   "at_most_3_words": 160,
+   "degenerate": 159
+  },
+  "TS": {
+   "n": 9417,
+   "mean_words": 70.2,
+   "median_words": 62,
+   "p10": 11,
+   "p90": 140,
+   "max": 481,
+   "at_most_3_words": 329,
+   "degenerate": 1979
+  }
+ },
+ "duplicate_closings": {
+  "distinct_closings": 8240,
+  "rows": 10268,
+  "closings_appearing_more_than_once": 68,
+  "rows_covered_by_repeats": 2096,
+  "top": [
+   {
+    "count": 1045,
+    "fs": 0,
+    "ts": 1045,
+    "text": "YOU ARE BEING TRANSFERRED TO A HUMAN AGENT. PLEASE HOLD ON."
+   },
+   {
+    "count": 329,
+    "fs": 0,
+    "ts": 329,
+    "text": "###STOP###"
+   },
+   {
+    "count": 187,
+    "fs": 0,
+    "ts": 187,
+    "text": "{\n  \"message\": \"YOU ARE BEING TRANSFERRED TO A HUMAN AGENT. PLEASE HOLD ON.\"\n}"
+   },
+   {
+    "count": 160,
+    "fs": 0,
+    "ts": 160,
+    "text": "\n\nYOU ARE BEING TRANSFERRED TO A HUMAN AGENT. PLEASE HOLD ON."
+   },
+   {
+    "count": 122,
+    "fs": 0,
+    "ts": 122,
+    "text": "{\"message\":\"YOU ARE BEING TRANSFERRED TO A HUMAN AGENT. PLEASE HOLD ON.\"}"
+   }
+  ]
+ },
+ "issue_384_auto_pass": {
+  "airline": {
+   "simulations": 2250,
+   "empty_communicate_gate": 1980,
+   "empty_communicate_share": 0.88,
+   "on_issue_384_list": 1035,
+   "on_list_share": 0.46,
+   "on_list_full_reward": 832,
+   "on_list_full_reward_rate": 0.8039,
+   "base_full_reward_rate": 0.6893
+  },
+  "retail": {
+   "simulations": 5075,
+   "empty_communicate_gate": 1596,
+   "empty_communicate_share": 0.3145,
+   "on_issue_384_list": 269,
+   "on_list_share": 0.053,
+   "on_list_full_reward": 240,
+   "on_list_full_reward_rate": 0.8922,
+   "base_full_reward_rate": 0.7657
+  }
+ },
+ "ablations": {
+  "as_published": {
+   "closing": 0.9438,
+   "actions": 0.8865,
+   "rows": 10268
+  },
+  "degenerate_removed": {
+   "closing": 0.9354,
+   "actions": 0.8865,
+   "rows": 8289
+  },
+  "deduplicated": {
+   "closing": 0.9317,
+   "actions": 0.8817,
+   "rows": 8204
+  }
+ },
+ "attack_diversity": {
+  "entity_unresolved": 1320,
+  "entity_unresolved_share": 0.8168,
+  "top_entities": {
+   "request": 1320,
+   "line": 75,
+   "order": 62,
+   "reservation": 49,
+   "data": 29,
+   "sim": 29
+  },
+  "by_style": {
+   "direct": {
+    "trajectories": 1616,
+    "distinct_strings": 43
+   },
+   "hedged_implied": {
+    "trajectories": 1616,
+    "distinct_strings": 43
+   },
+   "technically_true": {
+    "trajectories": 1616,
+    "distinct_strings": 43
+   },
+   "lexicon_avoiding": {
+    "trajectories": 1616,
+    "distinct_strings": 43
+   }
+  }
+ },
+ "provenance": {
+  "seed": 42,
+  "data_dir": "data/tau2",
+  "dropped": {
+   "missing_reward": 0,
+   "no_messages": 107,
+   "no_assistant_turn": 0
+  }
+ }
+}

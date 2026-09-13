@@ -1,0 +1,208 @@
+{
+ "across_seeds": {
+  "text_clean": {
+   "mean": 0.9458,
+   "std": 0.0074,
+   "min": 0.9366,
+   "max": 0.9591,
+   "seeds": 10
+  },
+  "structural_clean": {
+   "mean": 0.923,
+   "std": 0.0081,
+   "min": 0.9101,
+   "max": 0.9377,
+   "seeds": 10
+  },
+  "combined_clean": {
+   "mean": 0.9557,
+   "std": 0.0064,
+   "min": 0.9454,
+   "max": 0.9638,
+   "seeds": 10
+  },
+  "text_direct": {
+   "mean": 0.8379,
+   "std": 0.0247,
+   "min": 0.7963,
+   "max": 0.87,
+   "seeds": 10
+  },
+  "text_hedged_implied": {
+   "mean": 0.6728,
+   "std": 0.0186,
+   "min": 0.6507,
+   "max": 0.7034,
+   "seeds": 10
+  },
+  "text_technically_true": {
+   "mean": 0.8021,
+   "std": 0.0192,
+   "min": 0.7583,
+   "max": 0.8238,
+   "seeds": 10
+  },
+  "text_lexicon_avoiding": {
+   "mean": 0.6799,
+   "std": 0.0266,
+   "min": 0.6394,
+   "max": 0.7133,
+   "seeds": 10
+  },
+  "text_swap_lexicon": {
+   "mean": 0.9212,
+   "std": 0.007,
+   "min": 0.9123,
+   "max": 0.9334,
+   "seeds": 10
+  },
+  "combined_direct": {
+   "mean": 0.9297,
+   "std": 0.0105,
+   "min": 0.9142,
+   "max": 0.9465,
+   "seeds": 10
+  },
+  "combined_hedged_implied": {
+   "mean": 0.8697,
+   "std": 0.0098,
+   "min": 0.8534,
+   "max": 0.8846,
+   "seeds": 10
+  },
+  "combined_technically_true": {
+   "mean": 0.9099,
+   "std": 0.007,
+   "min": 0.9007,
+   "max": 0.9196,
+   "seeds": 10
+  },
+  "combined_lexicon_avoiding": {
+   "mean": 0.8669,
+   "std": 0.0126,
+   "min": 0.8504,
+   "max": 0.8856,
+   "seeds": 10
+  },
+  "combined_swap_lexicon": {
+   "mean": 0.943,
+   "std": 0.0057,
+   "min": 0.9343,
+   "max": 0.9498,
+   "seeds": 10
+  },
+  "flip_assert_completion": {
+   "mean": 0.1326,
+   "std": 0.0152,
+   "min": 0.1101,
+   "max": 0.1514,
+   "seeds": 10
+  },
+  "flip_direct": {
+   "mean": 0.305,
+   "std": 0.0413,
+   "min": 0.2339,
+   "max": 0.3578,
+   "seeds": 10
+  },
+  "flip_hedged_implied": {
+   "mean": 0.0,
+   "std": 0.0,
+   "min": 0.0,
+   "max": 0.0,
+   "seeds": 10
+  },
+  "flip_technically_true": {
+   "mean": 0.0872,
+   "std": 0.0657,
+   "min": 0.0,
+   "max": 0.1881,
+   "seeds": 10
+  },
+  "flip_lexicon_avoiding": {
+   "mean": 0.0,
+   "std": 0.0,
+   "min": 0.0,
+   "max": 0.0,
+   "seeds": 10
+  }
+ },
+ "crossover_seeds_any_transform": 10,
+ "crossover_seeds_swap_lexicon": 5,
+ "crossover_seeds_total": 10,
+ "intervals_on_first_seed": {
+  "text_clean": {
+   "auroc": 0.9438,
+   "ci95": [
+    0.9253,
+    0.9613
+   ],
+   "resamples": 2000
+  },
+  "structural_clean": {
+   "auroc": 0.9216,
+   "ci95": [
+    0.8995,
+    0.9424
+   ],
+   "resamples": 2000
+  },
+  "text_lexicon_avoiding": {
+   "auroc": 0.6607,
+   "ci95": [
+    0.634,
+    0.6866
+   ],
+   "resamples": 2000
+  },
+  "crossover_margin": {
+   "diff": 0.2609,
+   "ci95": [
+    0.2304,
+    0.2921
+   ],
+   "excludes_zero": true,
+   "resamples": 2000
+  },
+  "worst_transform": "lexicon_avoiding",
+  "attack_a_mcnemar_surgical_vs_unmodified": {
+   "a_only": 12,
+   "b_only": 0,
+   "discordant": 12,
+   "exact_two_sided_p": 0.000488
+  },
+  "attack_a_unmodified_flip_rate": 0.0826
+ },
+ "provenance": {
+  "seeds": [
+   42,
+   43,
+   44,
+   45,
+   46,
+   47,
+   48,
+   49,
+   50,
+   51
+  ],
+  "resamples": 2000,
+  "data_dir": "data/tau2",
+  "records": 12859,
+  "dropped": {
+   "missing_reward": 0,
+   "no_messages": 107,
+   "no_assistant_turn": 0
+  },
+  "counts": {
+   "FS": 851,
+   "HF": 1616,
+   "AMB": 975,
+   "TS": 9417
+  },
+  "attack_a_population": 218,
+  "sklearn": "1.5.2",
+  "numpy": "2.5.3",
+  "python": "3.12.3"
+ }
+}

@@ -1,0 +1,148 @@
+{
+ "explicit_status": {
+  "tasks": 1390,
+  "fs": 914,
+  "ts": 476,
+  "submissions": 13,
+  "dropped": {
+   "no_api_calls_file": 0,
+   "no_completion_call": 3384,
+   "no_explicit_status": 7079,
+   "claimed_failure": 674,
+   "status_call_only": 511
+  },
+  "auroc": {
+   "endpoints": {
+    "mean": 0.7892,
+    "std": 0.0598,
+    "min": 0.6879,
+    "max": 0.8708,
+    "seeds": 10
+   },
+   "arguments": {
+    "mean": 0.8325,
+    "std": 0.0538,
+    "min": 0.7424,
+    "max": 0.9128,
+    "seeds": 10
+   },
+   "both": {
+    "mean": 0.8093,
+    "std": 0.0581,
+    "min": 0.7088,
+    "max": 0.8832,
+    "seeds": 10
+   }
+  },
+  "precision_at_10pct": {
+   "endpoints": {
+    "mean": 0.9143,
+    "std": 0.152,
+    "min": 0.4909,
+    "max": 1.0,
+    "seeds": 10
+   },
+   "both": {
+    "mean": 0.9283,
+    "std": 0.1442,
+    "min": 0.5273,
+    "max": 1.0,
+    "seeds": 10
+   }
+  },
+  "both_beats_endpoints_seeds": 10,
+  "seeds_total": 10,
+  "both_minus_endpoints": {
+   "diff": 0.0294,
+   "ci95": [
+    0.002,
+    0.0601
+   ],
+   "excludes_zero": true,
+   "resamples": 2000
+  }
+ },
+ "any_completion_claim": {
+  "tasks": 8467,
+  "fs": 4666,
+  "ts": 3801,
+  "submissions": 43,
+  "dropped": {
+   "no_api_calls_file": 0,
+   "no_completion_call": 3384,
+   "no_explicit_status": 0,
+   "claimed_failure": 674,
+   "status_call_only": 513
+  },
+  "auroc": {
+   "endpoints": {
+    "mean": 0.8112,
+    "std": 0.0275,
+    "min": 0.7695,
+    "max": 0.8459,
+    "seeds": 10
+   },
+   "arguments": {
+    "mean": 0.8383,
+    "std": 0.0252,
+    "min": 0.8004,
+    "max": 0.872,
+    "seeds": 10
+   },
+   "both": {
+    "mean": 0.845,
+    "std": 0.0254,
+    "min": 0.8059,
+    "max": 0.8731,
+    "seeds": 10
+   }
+  },
+  "precision_at_10pct": {
+   "endpoints": {
+    "mean": 0.9363,
+    "std": 0.0339,
+    "min": 0.8611,
+    "max": 0.9717,
+    "seeds": 10
+   },
+   "both": {
+    "mean": 0.9595,
+    "std": 0.0175,
+    "min": 0.9306,
+    "max": 0.9819,
+    "seeds": 10
+   }
+  },
+  "both_beats_endpoints_seeds": 10,
+  "seeds_total": 10,
+  "both_minus_endpoints": {
+   "diff": 0.0363,
+   "ci95": [
+    0.0269,
+    0.0457
+   ],
+   "excludes_zero": true,
+   "resamples": 2000
+  }
+ },
+ "provenance": {
+  "seeds": [
+   42,
+   43,
+   44,
+   45,
+   46,
+   47,
+   48,
+   49,
+   50,
+   51
+  ],
+  "resamples": 2000,
+  "data_dir": "data/appworld/leaderboard/experiments/outputs",
+  "split": "GroupShuffleSplit by submission",
+  "sklearn": "1.5.2",
+  "numpy": "2.5.3",
+  "python": "3.12.3"
+ }
+}

@@ -1,0 +1,194 @@
+{
+ "detectors": {
+  "text": {
+   "mean": 0.9458,
+   "std": 0.0074,
+   "min": 0.9366,
+   "max": 0.9591,
+   "seeds": 10
+  },
+  "structural": {
+   "mean": 0.923,
+   "std": 0.0081,
+   "min": 0.9101,
+   "max": 0.9377,
+   "seeds": 10
+  },
+  "combined": {
+   "mean": 0.9557,
+   "std": 0.0064,
+   "min": 0.9454,
+   "max": 0.9638,
+   "seeds": 10
+  },
+  "tool_names": {
+   "mean": 0.8924,
+   "std": 0.0095,
+   "min": 0.8829,
+   "max": 0.9091,
+   "seeds": 10
+  },
+  "arguments": {
+   "mean": 0.8999,
+   "std": 0.0118,
+   "min": 0.8826,
+   "max": 0.9137,
+   "seeds": 10
+  }
+ },
+ "under_swap_lexicon": {
+  "text": {
+   "mean": 0.9212,
+   "std": 0.007,
+   "min": 0.9123,
+   "max": 0.9334,
+   "seeds": 10
+  },
+  "combined": {
+   "mean": 0.943,
+   "std": 0.0057,
+   "min": 0.9343,
+   "max": 0.9498,
+   "seeds": 10
+  }
+ },
+ "capacity_control": {
+  "text_30k": {
+   "mean": 0.9458,
+   "std": 0.0074,
+   "min": 0.9366,
+   "max": 0.9591,
+   "seeds": 10
+  },
+  "text_60k": {
+   "mean": 0.9455,
+   "std": 0.0072,
+   "min": 0.9372,
+   "max": 0.9581,
+   "seeds": 10
+  },
+  "text_120k": {
+   "mean": 0.9455,
+   "std": 0.0072,
+   "min": 0.9372,
+   "max": 0.9581,
+   "seeds": 10
+  }
+ },
+ "structural_families_removed": {
+  "pay:": {
+   "mean": 0.9212,
+   "std": 0.0081,
+   "min": 0.908,
+   "max": 0.9355,
+   "seeds": 10
+  },
+  "val:": {
+   "mean": 0.9135,
+   "std": 0.0095,
+   "min": 0.9025,
+   "max": 0.9339,
+   "seeds": 10
+  },
+  "num:/len:": {
+   "mean": 0.9195,
+   "std": 0.0083,
+   "min": 0.9063,
+   "max": 0.934,
+   "seeds": 10
+  },
+  "arg: keys": {
+   "mean": 0.9249,
+   "std": 0.0085,
+   "min": 0.9111,
+   "max": 0.9407,
+   "seeds": 10
+  },
+  "nids/nmut": {
+   "mean": 0.9197,
+   "std": 0.0076,
+   "min": 0.9094,
+   "max": 0.9326,
+   "seeds": 10
+  }
+ },
+ "grounding_note": "grounded:/ungrounded: tokens were tried and removed; seed 42 gave 0.9155 with them and 0.9216 without, so they cost 0.0061 and are not emitted by argument_tokens",
+ "precision_at_10pct": {
+  "text": {
+   "mean": 0.5708,
+   "std": 0.0264,
+   "min": 0.5325,
+   "max": 0.6104,
+   "seeds": 10
+  },
+  "combined": {
+   "mean": 0.6156,
+   "std": 0.0122,
+   "min": 0.6039,
+   "max": 0.6429,
+   "seeds": 10
+  },
+  "text_attacked": {
+   "mean": 0.4818,
+   "std": 0.027,
+   "min": 0.4351,
+   "max": 0.526,
+   "seeds": 10
+  },
+  "combined_attacked": {
+   "mean": 0.5805,
+   "std": 0.0182,
+   "min": 0.5519,
+   "max": 0.6039,
+   "seeds": 10
+  }
+ },
+ "combined_beats_text_seeds": {
+  "clean": 10,
+  "attacked": 10
+ },
+ "seeds_total": 10,
+ "combined_minus_text_clean": {
+  "diff": 0.0107,
+  "ci95": [
+   0.0029,
+   0.0189
+  ],
+  "excludes_zero": true,
+  "resamples": 2000
+ },
+ "combined_minus_text_attacked": {
+  "diff": 0.0194,
+  "ci95": [
+   0.0104,
+   0.0284
+  ],
+  "excludes_zero": true,
+  "resamples": 2000
+ },
+ "provenance": {
+  "seeds": [
+   42,
+   43,
+   44,
+   45,
+   46,
+   47,
+   48,
+   49,
+   50,
+   51
+  ],
+  "resamples": 2000,
+  "data_dir": "data/tau2",
+  "records": 12859,
+  "dropped": {
+   "missing_reward": 0,
+   "no_messages": 107,
+   "no_assistant_turn": 0
+  },
+  "sklearn": "1.5.2",
+  "numpy": "2.5.3",
+  "python": "3.12.3"
+ }
+}

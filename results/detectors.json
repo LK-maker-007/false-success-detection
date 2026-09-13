@@ -1,0 +1,57 @@
+{
+ "text": {
+  "field": "closing",
+  "auroc": 0.9438,
+  "precision_at_flag_rate": 0.6104,
+  "vocabulary": 30000
+ },
+ "structural": {
+  "field": "structural",
+  "auroc": 0.9216,
+  "precision_at_flag_rate": 0.5325,
+  "vocabulary": 10877
+ },
+ "tool_names_only": {
+  "field": "actions",
+  "auroc": 0.8865,
+  "precision_at_flag_rate": 0.4091,
+  "vocabulary": 8092
+ },
+ "arguments_only": {
+  "field": "arguments",
+  "auroc": 0.9094,
+  "precision_at_flag_rate": 0.5065,
+  "vocabulary": 2650
+ },
+ "combined": {
+  "field": "closing+structural",
+  "auroc": 0.9545,
+  "precision_at_flag_rate": 0.6429,
+  "vocabulary": 40877
+ },
+ "provenance": {
+  "seed": 42,
+  "data_dir": "data/tau2",
+  "trajectory_files": 37,
+  "records": 12859,
+  "dropped": {
+   "missing_reward": 0,
+   "no_messages": 107,
+   "no_assistant_turn": 0
+  },
+  "counts": {
+   "FS": 851,
+   "HF": 1616,
+   "AMB": 975,
+   "TS": 9417
+  },
+  "split": {
+   "train": 7187,
+   "val": 1540,
+   "test": 1541
+  },
+  "sklearn": "1.5.2",
+  "numpy": "2.5.3",
+  "python": "3.12.3"
+ }
+}
