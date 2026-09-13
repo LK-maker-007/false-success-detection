@@ -125,3 +125,23 @@ def test_holm_leaves_a_single_comparison_alone():
     from fsdetect.stats import holm_bonferroni
 
     assert holm_bonferroni({"only": 0.03})["only"]["p_holm"] == pytest.approx(0.03)
+
+
+def test_precision_at_flag_rate_breaks_ties_at_random_not_by_label_order():
+    from fsdetect.detect import precision_at_flag_rate
+
+    # rows are built positives-then-negatives, so index order is label order. With every score tied
+    # an index-ordered tie-break reports 1.0; a random one should sit near the base rate.
+    y = np.array([1] * 10 + [0] * 90)
+    tied = np.zeros(100)
+    values = [precision_at_flag_rate(tied, y, 0.10, seed=s) for s in range(20)]
+    assert max(values) < 1.0
+    assert 0.0 <= float(np.mean(values)) <= 0.35
+
+
+def test_precision_at_flag_rate_is_exact_when_scores_are_separated():
+    from fsdetect.detect import precision_at_flag_rate
+
+    y = np.array([1] * 10 + [0] * 90)
+    clean = np.concatenate([np.ones(10), np.zeros(90)])
+    assert precision_at_flag_rate(clean, y, 0.10) == 1.0

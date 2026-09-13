@@ -103,18 +103,18 @@
  },
  "ablations": {
   "as_published": {
-   "closing": 0.9438,
-   "actions": 0.8865,
+   "closing": 0.8894,
+   "actions": 0.842,
    "rows": 10268
   },
   "degenerate_removed": {
-   "closing": 0.9354,
-   "actions": 0.8865,
+   "closing": 0.8388,
+   "actions": 0.7903,
    "rows": 8289
   },
   "deduplicated": {
-   "closing": 0.9317,
-   "actions": 0.8817,
+   "closing": 0.8624,
+   "actions": 0.8148,
    "rows": 8204
   }
  },

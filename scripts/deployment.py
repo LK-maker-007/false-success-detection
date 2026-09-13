@@ -18,7 +18,7 @@ from sklearn.metrics import roc_auc_score
 from fsdetect.appworld import build_dataset as appworld_dataset
 from fsdetect.appworld import load as appworld_load
 from fsdetect.corpus import closing_message, load, otel_tokens, split_labels
-from fsdetect.detect import STRUCTURAL_VECTORIZER, build_dataset, stratified_split
+from fsdetect.detect import STRUCTURAL_VECTORIZER, build_dataset, task_disjoint_split
 
 
 def fit_on(texts: list[str], y: np.ndarray) -> tuple[TfidfVectorizer, LogisticRegression]:
@@ -39,7 +39,7 @@ def main() -> None:
 
     records, _ = load(args.data)
     rows, y = build_dataset(split_labels(records))
-    train, _, test = stratified_split(y, 42)
+    train, _, test = task_disjoint_split(rows, y, 42)
     vectorizer, classifier = fit_on([rows[i]["otel_zero_config"] for i in train], y[train])
 
     # Latency, measured on raw trajectories so extraction is included. A deployment pays that cost.

@@ -21,7 +21,7 @@ from fsdetect.detect import (
     fit,
     precision_at_flag_rate,
     score,
-    stratified_split,
+    task_disjoint_split,
 )
 
 
@@ -36,7 +36,7 @@ def main() -> None:
     records, dropped = load(args.data)
     labels = split_labels(records)
     rows, y = build_dataset(labels)
-    train, _, test = stratified_split(y, args.seed)
+    train, _, test = task_disjoint_split(rows, y, args.seed)
 
     text_detector = fit(rows, y, train, "closing", TEXT_VECTORIZER, args.seed)
     action_detector = fit(rows, y, train, "actions", ACTION_VECTORIZER, args.seed)

@@ -1,31 +1,31 @@
 {
  "latency": {
   "extract": {
-   "mean_ms": 0.065,
+   "mean_ms": 0.066,
    "p50_ms": 0.059,
-   "p95_ms": 0.121,
-   "max_ms": 0.307
+   "p95_ms": 0.123,
+   "max_ms": 0.303
   },
   "score": {
-   "mean_ms": 0.395,
-   "p50_ms": 0.379,
-   "p95_ms": 0.507,
-   "max_ms": 0.873
+   "mean_ms": 0.398,
+   "p50_ms": 0.382,
+   "p95_ms": 0.514,
+   "max_ms": 0.896
   },
   "end_to_end": {
-   "mean_ms": 0.46,
-   "p50_ms": 0.438,
-   "p95_ms": 0.627,
-   "max_ms": 1.18
+   "mean_ms": 0.464,
+   "p50_ms": 0.441,
+   "p95_ms": 0.635,
+   "max_ms": 1.194
   }
  },
- "latency_batched_per_trajectory_ms": 0.124,
+ "latency_batched_per_trajectory_ms": 0.125,
  "latency_sample": {
   "n": 500,
   "median_messages": 28
  },
  "cross_benchmark": {
-  "tau2_vocab": 11729,
+  "tau2_vocab": 10761,
   "appworld_vocab": 30000,
   "shared_features": 18,
   "shared_examples": [
@@ -48,8 +48,8 @@
    "val:last_name=brown",
    "val:last_name=wilson"
   ],
-  "tau2_model_on_appworld_auroc": 0.4948,
-  "appworld_model_on_tau2_auroc": 0.5213,
+  "tau2_model_on_appworld_auroc": 0.491,
+  "appworld_model_on_tau2_auroc": 0.4015,
   "appworld_rows_with_no_known_feature": 0,
   "appworld_rows": 8467
  },

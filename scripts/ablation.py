@@ -24,7 +24,7 @@ from fsdetect.detect import (
     precision_at_flag_rate,
     score,
     score_combined,
-    stratified_split,
+    task_disjoint_split,
 )
 from fsdetect.stats import delong_test, holm_bonferroni, paired_bootstrap_auroc_diff, spread
 
@@ -63,7 +63,7 @@ def main() -> None:
     precision: dict[str, list[float]] = {k: [] for k in ("text", "combined", "text_attacked", "combined_attacked")}
 
     for seed in args.seeds:
-        train, _, test = stratified_split(y, seed)
+        train, _, test = task_disjoint_split(rows, y, seed)
         closings = [rows[i]["closing"] for i in test]
         structural = [rows[i]["structural"] for i in test]
         y_test = y[test]

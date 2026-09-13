@@ -24,7 +24,7 @@ from fsdetect.detect import (
     precision_at_flag_rate,
     score,
     score_combined,
-    stratified_split,
+    task_disjoint_split,
 )
 
 
@@ -39,7 +39,7 @@ def main() -> None:
     records, dropped = load(args.data)
     labels = split_labels(records)
     rows, y = build_dataset(labels)
-    train, val, test = stratified_split(y, args.seed)
+    train, val, test = task_disjoint_split(rows, y, args.seed)
     print(f"records {len(records)}  FS {len(labels['FS'])}  TS {len(labels['TS'])}", flush=True)
     print(f"HF {len(labels['HF'])}  ambiguous {len(labels['AMB'])}  dropped {dropped}", flush=True)
     print(f"train {len(train)}  val {len(val)}  test {len(test)}", flush=True)

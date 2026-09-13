@@ -18,7 +18,7 @@ from fsdetect.detect import (
     fit,
     precision_at_flag_rate,
     score,
-    stratified_split,
+    task_disjoint_split,
 )
 from fsdetect.stats import delong_test, holm_bonferroni, spread
 
@@ -46,7 +46,7 @@ def main() -> None:
     precision: dict[str, list[float]] = {k: [] for k in VARIANTS}
     held: dict[str, tuple] = {}
     for seed in args.seeds:
-        train, _, test = stratified_split(y, seed)
+        train, _, test = task_disjoint_split(rows, y, seed)
         for name in VARIANTS:
             field = "structural" if name == "full_structural" else name
             detector = fit(rows, y, train, field, STRUCTURAL_VECTORIZER, seed)

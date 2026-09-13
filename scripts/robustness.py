@@ -23,7 +23,7 @@ from fsdetect.detect import (
     fit_combined,
     score,
     score_combined,
-    stratified_split,
+    task_disjoint_split,
 )
 from fsdetect.stats import bootstrap_auroc, mcnemar_exact, paired_bootstrap_auroc_diff, spread
 
@@ -61,7 +61,7 @@ def main() -> None:
     intervals: dict[str, object] = {}
 
     for seed in args.seeds:
-        train, _, test = stratified_split(y, seed)
+        train, _, test = task_disjoint_split(rows, y, seed)
         text = fit(rows, y, train, "closing", TEXT_VECTORIZER, seed)
         actions = fit(rows, y, train, "structural", STRUCTURAL_VECTORIZER, seed)
         both = fit_combined(rows, y, train, COMBINED_SPEC, seed)

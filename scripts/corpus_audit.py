@@ -12,7 +12,7 @@ from pathlib import Path
 
 from fsdetect.attack import STYLES, entity_of, rewrite
 from fsdetect.corpus import load, split_labels
-from fsdetect.detect import ACTION_VECTORIZER, TEXT_VECTORIZER, auroc, build_dataset, fit, stratified_split
+from fsdetect.detect import ACTION_VECTORIZER, TEXT_VECTORIZER, auroc, build_dataset, fit, task_disjoint_split
 
 # Control tokens the harness emits in place of a customer-facing message. They are perfectly
 # separable and belong to one class only, so a detector can score them without reading language.
@@ -71,7 +71,7 @@ def length_stats(rows: list[dict]) -> dict[str, float | int]:
 def ablate(labels: dict[str, list[dict]], keep, seed: int) -> dict[str, float]:
     filtered = {k: [r for r in v if keep(r)] for k, v in labels.items()}
     rows, y = build_dataset(filtered)
-    train, _, test = stratified_split(y, seed)
+    train, _, test = task_disjoint_split(rows, y, seed)
     scores = {}
     for field, config in (("closing", TEXT_VECTORIZER), ("actions", ACTION_VECTORIZER)):
         detector = fit(rows, y, train, field, config, seed)

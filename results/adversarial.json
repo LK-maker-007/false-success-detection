@@ -1,38 +1,38 @@
 {
  "clean": {
-  "text": 0.9438,
-  "structural": 0.8865
+  "text": 0.8894,
+  "structural": 0.842
  },
  "attack_a_flip_rate": {
-  "unmodified": 0.0118,
+  "unmodified": 0.0105,
   "direct": 0.3193,
   "hedged_implied": 0.0,
-  "technically_true": 0.0087,
+  "technically_true": 0.0118,
   "lexicon_avoiding": 0.0
  },
  "attack_b_auroc": {
   "direct": {
-   "text_auroc": 0.8666,
-   "text_precision_at_flag_rate": 0.3052,
-   "distinct_rewrites": 1153
+   "text_auroc": 0.7789,
+   "text_precision_at_flag_rate": 0.2987,
+   "distinct_rewrites": 1158
   },
   "hedged_implied": {
-   "text_auroc": 0.6694,
+   "text_auroc": 0.5882,
    "text_precision_at_flag_rate": 0.0,
-   "distinct_rewrites": 1153
+   "distinct_rewrites": 1158
   },
   "technically_true": {
-   "text_auroc": 0.8077,
-   "text_precision_at_flag_rate": 0.1429,
-   "distinct_rewrites": 1153
+   "text_auroc": 0.7266,
+   "text_precision_at_flag_rate": 0.0,
+   "distinct_rewrites": 1158
   },
   "lexicon_avoiding": {
-   "text_auroc": 0.6607,
+   "text_auroc": 0.6218,
    "text_precision_at_flag_rate": 0.0,
-   "distinct_rewrites": 1153
+   "distinct_rewrites": 1158
   }
  },
- "worst_text_auroc": 0.6607,
+ "worst_text_auroc": 0.5882,
  "crossover": true,
  "structural_invariant_by_construction": true,
  "provenance": {
@@ -51,7 +51,7 @@
    "TS": 9417
   },
   "attack_a_population": 1616,
-  "attack_b_positives": 128,
+  "attack_b_positives": 126,
   "sklearn": "1.5.2",
   "numpy": "2.5.3",
   "python": "3.12.3"
