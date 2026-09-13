@@ -1,0 +1,185 @@
+{
+ "group_shuffle_30pct": {
+  "text": {
+   "mean": 0.9244,
+   "std": 0.0189,
+   "min": 0.8939,
+   "max": 0.9433,
+   "seeds": 10
+  },
+  "structural": {
+   "mean": 0.9067,
+   "std": 0.016,
+   "min": 0.8853,
+   "max": 0.9274,
+   "seeds": 10
+  },
+  "combined": {
+   "mean": 0.9347,
+   "std": 0.0142,
+   "min": 0.914,
+   "max": 0.9522,
+   "seeds": 10
+  },
+  "combined_p_at_10": {
+   "mean": 0.4861,
+   "std": 0.1087,
+   "min": 0.3221,
+   "max": 0.6478,
+   "seeds": 10
+  }
+ },
+ "leave_one_submission_out": {
+  "claude-3-7-sonnet_anthropic_2024-06-20": {
+   "text": 0.8429,
+   "structural": 0.8721,
+   "combined": 0.8797,
+   "combined_p_at_10": 0.7143,
+   "n": 839,
+   "fs": 155
+  },
+  "claude-opus-4-5_sierra_2026-02-26": {
+   "text": 0.954,
+   "structural": 0.9251,
+   "combined": 0.9604,
+   "combined_p_at_10": 0.3131,
+   "n": 989,
+   "fs": 37
+  },
+  "claude-sonnet-4-5_sierra_2026-02-26": {
+   "text": 0.9422,
+   "structural": 0.9076,
+   "combined": 0.9397,
+   "combined_p_at_10": 0.5745,
+   "n": 941,
+   "fs": 80
+  },
+  "glm-5-think_sierra_2026-03-02": {
+   "text": 0.9348,
+   "structural": 0.8986,
+   "combined": 0.9423,
+   "combined_p_at_10": 0.4105,
+   "n": 951,
+   "fs": 54
+  },
+  "gpt-4-1-mini_openai_2024-06-20": {
+   "text": 0.9398,
+   "structural": 0.9167,
+   "combined": 0.9521,
+   "combined_p_at_10": 0.8784,
+   "n": 741,
+   "fs": 139
+  },
+  "gpt-4-1_openai_2024-06-20": {
+   "text": 0.9501,
+   "structural": 0.9357,
+   "combined": 0.9594,
+   "combined_p_at_10": 0.7238,
+   "n": 1050,
+   "fs": 115
+  },
+  "gpt-5-2-none_sierra_2026-02-26": {
+   "text": 0.9746,
+   "structural": 0.9536,
+   "combined": 0.9758,
+   "combined_p_at_10": 0.2949,
+   "n": 776,
+   "fs": 26
+  },
+  "gpt-5-2_sierra_2026-02-26": {
+   "text": 0.9328,
+   "structural": 0.9105,
+   "combined": 0.9379,
+   "combined_p_at_10": 0.2653,
+   "n": 979,
+   "fs": 32
+  },
+  "gpt-5_sierra_2025-08-09": {
+   "text": 0.9488,
+   "structural": 0.9442,
+   "combined": 0.9608,
+   "combined_p_at_10": 0.4242,
+   "n": 986,
+   "fs": 52
+  },
+  "o4-mini_openai_2024-06-20": {
+   "text": 0.9232,
+   "structural": 0.8921,
+   "combined": 0.9424,
+   "combined_p_at_10": 0.726,
+   "n": 729,
+   "fs": 93
+  },
+  "qwen3.5-397b-a17b-think_sierra_2026-03-02": {
+   "text": 0.9142,
+   "structural": 0.8972,
+   "combined": 0.9282,
+   "combined_p_at_10": 0.3365,
+   "n": 1045,
+   "fs": 51
+  },
+  "toolorchestra_nvidia_2025-12-02": {
+   "text": 0.9493,
+   "structural": 0.9213,
+   "combined": 0.9574,
+   "combined_p_at_10": 0.5417,
+   "n": 242,
+   "fs": 17
+  }
+ },
+ "loso_summary": {
+  "text": {
+   "mean": 0.9339,
+   "std": 0.0326,
+   "min": 0.8429,
+   "max": 0.9746,
+   "seeds": 12
+  },
+  "structural": {
+   "mean": 0.9146,
+   "std": 0.0232,
+   "min": 0.8721,
+   "max": 0.9536,
+   "seeds": 12
+  },
+  "combined": {
+   "mean": 0.9447,
+   "std": 0.0243,
+   "min": 0.8797,
+   "max": 0.9758,
+   "seeds": 12
+  }
+ },
+ "loso_combined_beats_text": 11,
+ "loso_folds": 12,
+ "skipped_single_class": {},
+ "random_split_reference": {
+  "text": 0.9458,
+  "structural": 0.923,
+  "combined": 0.9557
+ },
+ "provenance": {
+  "seeds": [
+   42,
+   43,
+   44,
+   45,
+   46,
+   47,
+   48,
+   49,
+   50,
+   51
+  ],
+  "data_dir": "data/tau2",
+  "records": 12859,
+  "dropped": {
+   "missing_reward": 0,
+   "no_messages": 107,
+   "no_assistant_turn": 0
+  },
+  "sklearn": "1.5.2",
+  "numpy": "2.5.3",
+  "python": "3.12.3"
+ }
+}

@@ -95,7 +95,27 @@ On the 1,390-task corpus, arguments alone score above the combination. We attrib
 size, since the standard deviation there is more than double the larger corpus, and we quote the
 8,467-task result. [H]
 
-### 2.3 Prevalence is agent-dependent, not a constant
+### 2.3 Held out by submission
+
+The tau2 numbers above use a random split. A deployed detector scores agents it never trained on,
+so we repeat the evaluation holding out whole submissions.
+
+| protocol | text | structural | combined |
+|---|---|---|---|
+| random | 0.9458 | 0.9230 | 0.9557 |
+| 30% of submissions held out, 10 seeds | 0.9244 +/- 0.0189 | 0.9067 +/- 0.0160 | 0.9347 +/- 0.0142 |
+| leave one submission out, 12 folds | 0.9339 +/- 0.0326 | 0.9146 +/- 0.0232 | 0.9447 +/- 0.0243 |
+
+Combined beats text on 11 of 12 held-out submissions. The worst fold is
+`claude-3-7-sonnet_anthropic_2024-06-20` at 0.8797, the oldest model and the one with the highest
+failure rate at 38.5%. [V, results/heldout.json]
+
+Precision does not transfer the way ranking does. At a 10% flag rate the combined detector falls
+from 0.6156 under a random split to 0.4861 +/- 0.1087 across held-out submissions, ranging 0.32 to
+0.65. The ordering generalises to unseen agents; the score scale does not. A deployed detector
+must have its threshold fitted locally rather than shipped fixed. [V, results/heldout.json]
+
+### 2.4 Prevalence is agent-dependent, not a constant
 
 The reference work reports 75.8% for AppWorld self-assessing trajectories with explicit status
 claims [C, arXiv 2606.09863 abstract]. Across the 11 AppWorld submissions with at least 100
@@ -251,7 +271,8 @@ committed script writing one JSON file under `results/`.
 | §1 mechanism | `scripts/mechanism.py` | `results/mechanism.json` |
 | §2.1 tau2 detectors | `scripts/ablation.py`, `scripts/detectors.py` | `results/ablation.json`, `results/detectors.json` |
 | §2.2 AppWorld | `scripts/appworld_detectors.py` | `results/appworld.json` |
-| §2.3 prevalence | `scripts/appworld_prevalence.py` | `results/appworld_prevalence.json` |
+| §2.3 held out | `scripts/heldout.py` | `results/heldout.json` |
+| §2.4 prevalence | `scripts/appworld_prevalence.py` | `results/appworld_prevalence.json` |
 | §3 robustness | `scripts/robustness.py`, `scripts/adversarial.py` | `results/robustness.json`, `results/adversarial.json` |
 | §4.1 corpus | `scripts/corpus_provenance.py --check-timestamps` | `results/corpus_provenance.json` |
 | §4.2 auto-pass | `scripts/corpus_audit.py` | `results/corpus_audit.json` |
