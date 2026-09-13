@@ -1,4 +1,4 @@
-"""Score tau2 detectors on unseen submissions, the condition a deployed detector actually faces."""
+"""Score tau2 detectors on unseen submissions. Note this holds out agents, never tasks."""
 
 from __future__ import annotations
 
@@ -23,6 +23,7 @@ from fsdetect.detect import (
     precision_at_flag_rate,
     score,
     score_combined,
+    task_groups,
 )
 from fsdetect.stats import spread
 
@@ -51,6 +52,17 @@ def main() -> None:
     records, dropped = load(args.data)
     rows, y = build_dataset(split_labels(records))
     groups = np.array([r["submission"] for r in rows])
+    # tau2 is a complete grid: every one of the 12 submissions runs every one of the 278 tasks.
+    # Holding out a submission therefore holds out no task at all, so these numbers measure
+    # generalisation to an unseen agent while every task is still seen. Agent-disjoint and
+    # task-disjoint cannot both hold on this benchmark; see scripts/protocol.py for the latter.
+    tasks = task_groups(rows)
+    coverage = {s: len({t for t, g in zip(tasks, groups, strict=True) if g == s}) for s in sorted(set(groups))}
+    print(
+        f"task coverage per submission: min {min(coverage.values())} "
+        f"max {max(coverage.values())} of {len(set(tasks))}",
+        flush=True,
+    )
     print(f"rows {len(rows)}  FS {int(y.sum())}  submissions {len(set(groups))}", flush=True)
 
     # Protocol matching AppWorld: 30% of submissions held out, repeated over seeds.
@@ -117,7 +129,8 @@ def main() -> None:
         "loso_combined_beats_text": wins,
         "loso_folds": len(loso),
         "skipped_single_class": skipped,
-        "random_split_reference": {"text": 0.9458, "structural": 0.9230, "combined": 0.9557},
+        "protocol": "agent-disjoint, NOT task-disjoint; every held-out submission's tasks appear in training",
+        "task_coverage_per_submission": coverage,
         "provenance": {
             "seeds": args.seeds,
             "data_dir": str(args.data),
