@@ -148,6 +148,103 @@
   "attacked": 10
  },
  "seeds_total": 10,
+ "delong_holm_corrected": {
+  "combined_vs_text_clean": {
+   "confirmatory_seed": 42,
+   "diff": 0.0107,
+   "delong_se_within_split": 0.004,
+   "ci95_within_split": [
+    0.003,
+    0.0185
+   ],
+   "p": 0.006833937702379095,
+   "p_holm": 0.01366787540475819,
+   "significant_at_0.05": true,
+   "diff_across_seeds": {
+    "mean": 0.0099,
+    "std": 0.0034,
+    "min": 0.0047,
+    "max": 0.0148,
+    "seeds": 10
+   }
+  },
+  "combined_vs_text_attacked": {
+   "confirmatory_seed": 42,
+   "diff": 0.0194,
+   "delong_se_within_split": 0.0045,
+   "ci95_within_split": [
+    0.0105,
+    0.0283
+   ],
+   "p": 1.8678793973987237e-05,
+   "p_holm": 5.603638192196171e-05,
+   "significant_at_0.05": true,
+   "diff_across_seeds": {
+    "mean": 0.0218,
+    "std": 0.0044,
+    "min": 0.0158,
+    "max": 0.0287,
+    "seeds": 10
+   }
+  },
+  "structural_vs_tool_names": {
+   "confirmatory_seed": 42,
+   "diff": 0.0351,
+   "delong_se_within_split": 0.0064,
+   "ci95_within_split": [
+    0.0226,
+    0.0476
+   ],
+   "p": 3.836468505624233e-08,
+   "p_holm": 1.534587402249693e-07,
+   "significant_at_0.05": true,
+   "diff_across_seeds": {
+    "mean": 0.0306,
+    "std": 0.0037,
+    "min": 0.0259,
+    "max": 0.0353,
+    "seeds": 10
+   }
+  },
+  "structural_vs_arguments": {
+   "confirmatory_seed": 42,
+   "diff": 0.0122,
+   "delong_se_within_split": 0.0078,
+   "ci95_within_split": [
+    -0.0031,
+    0.0275
+   ],
+   "p": 0.11783415819811453,
+   "p_holm": 0.11783415819811453,
+   "significant_at_0.05": false,
+   "diff_across_seeds": {
+    "mean": 0.0231,
+    "std": 0.0121,
+    "min": 0.0077,
+    "max": 0.0463,
+    "seeds": 10
+   }
+  },
+  "text_clean_vs_attacked": {
+   "confirmatory_seed": 42,
+   "diff": 0.0186,
+   "delong_se_within_split": 0.0021,
+   "ci95_within_split": [
+    0.0145,
+    0.0227
+   ],
+   "p": 9.753512231544829e-19,
+   "p_holm": 4.8767561157724145e-18,
+   "significant_at_0.05": true,
+   "diff_across_seeds": {
+    "mean": 0.0246,
+    "std": 0.0028,
+    "min": 0.0186,
+    "max": 0.0276,
+    "seeds": 10
+   }
+  }
+ },
  "combined_minus_text_clean": {
   "diff": 0.0107,
   "ci95": [

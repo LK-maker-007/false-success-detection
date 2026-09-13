@@ -67,3 +67,61 @@ def test_score_combined_rejects_a_missing_column():
     vec = TfidfVectorizer().fit(["alpha beta"])
     with pytest.raises(ValueError, match="missing"):
         score_combined(([("closing", vec)], None), {"structural": ["x"]})
+
+
+def test_delong_auc_matches_sklearn():
+    from sklearn.metrics import roc_auc_score
+
+    from fsdetect.stats import delong_test
+
+    rng = np.random.default_rng(0)
+    y = np.array([0] * 120 + [1] * 80)
+    a = np.where(y == 1, rng.normal(1.0, 1.0, 200), rng.normal(0.0, 1.0, 200))
+    b = np.where(y == 1, rng.normal(0.3, 1.0, 200), rng.normal(0.0, 1.0, 200))
+    out = delong_test(y, a, b)
+    assert abs(out["auc_a"] - roc_auc_score(y, a)) < 1e-3
+    assert abs(out["auc_b"] - roc_auc_score(y, b)) < 1e-3
+
+
+def test_delong_handles_ties_via_midranks():
+    from fsdetect.stats import delong_test
+
+    y = np.array([0, 0, 1, 1])
+    tied = np.array([0.5, 0.5, 0.5, 0.5])
+    out = delong_test(y, tied, tied)
+    assert out["auc_a"] == 0.5
+    assert out["diff"] == 0.0
+    assert out["p"] == 1.0
+
+
+def test_delong_finds_a_real_difference_and_not_a_fake_one():
+    from fsdetect.stats import delong_test
+
+    y = np.array([0] * 100 + [1] * 100)
+    perfect = np.concatenate([np.zeros(100), np.ones(100)])
+    coin = np.tile([0.0, 1.0], 100)
+    assert delong_test(y, perfect, coin)["p"] < 0.001
+    assert delong_test(y, perfect, perfect)["p"] == 1.0
+
+
+def test_delong_rejects_a_single_class():
+    from fsdetect.stats import delong_test
+
+    with pytest.raises(ValueError, match="both classes"):
+        delong_test(np.zeros(5), np.arange(5), np.arange(5))
+
+
+def test_holm_is_monotone_and_never_below_the_raw_p():
+    from fsdetect.stats import holm_bonferroni
+
+    out = holm_bonferroni({"a": 0.001, "b": 0.02, "c": 0.04, "d": 0.6})
+    assert out["a"]["p_holm"] == pytest.approx(0.004)
+    assert all(out[k]["p_holm"] >= out[k]["p"] for k in out)
+    ordered = sorted(out.values(), key=lambda v: v["p"])
+    assert all(a["p_holm"] <= b["p_holm"] for a, b in zip(ordered[:-1], ordered[1:], strict=True))
+
+
+def test_holm_leaves_a_single_comparison_alone():
+    from fsdetect.stats import holm_bonferroni
+
+    assert holm_bonferroni({"only": 0.03})["only"]["p_holm"] == pytest.approx(0.03)

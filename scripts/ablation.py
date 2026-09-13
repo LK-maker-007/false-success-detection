@@ -26,7 +26,7 @@ from fsdetect.detect import (
     score_combined,
     stratified_split,
 )
-from fsdetect.stats import paired_bootstrap_auroc_diff, spread
+from fsdetect.stats import delong_test, holm_bonferroni, paired_bootstrap_auroc_diff, spread
 
 # grounded:/ungrounded: is absent from argument_tokens. It was measured on seed 42 at 0.9216 against
 # 0.9155 with it, so it cost 0.0061, and was removed rather than kept as an ablation row that cannot fire.
@@ -56,6 +56,10 @@ def main() -> None:
     capacity: dict[str, list[float]] = {"text_30k": [], "text_60k": [], "text_120k": []}
     families: dict[str, list[float]] = {name: [] for name in FAMILIES}
     wins = {"clean": 0, "attacked": 0}
+    # DeLong at every seed. The spread of the difference across seeds measures split
+    # variability; the DeLong standard error measures sampling within one split. They are
+    # different quantities and are reported separately rather than side by side.
+    comparisons: dict[str, list[dict]] = {}
     precision: dict[str, list[float]] = {k: [] for k in ("text", "combined", "text_attacked", "combined_attacked")}
 
     for seed in args.seeds:
@@ -106,8 +110,19 @@ def main() -> None:
             value = roc_auc_score(y_test, score(detector, [rows[i]["ablated"] for i in test]))
             families[name].append(round(float(value), 4))
 
+        text_clean_scores = score(*held["text"])
+        pairs = {
+            "combined_vs_text_clean": (clean_combined, text_clean_scores),
+            "combined_vs_text_attacked": (combined_attacked, text_attacked),
+            "structural_vs_tool_names": (score(*held["structural"]), score(*held["tool_names"])),
+            "structural_vs_arguments": (score(*held["structural"]), score(*held["arguments"])),
+            "text_clean_vs_attacked": (text_clean_scores, text_attacked),
+        }
+        for name, (a, b) in pairs.items():
+            comparisons.setdefault(name, []).append(delong_test(y_test, a, b))
+
         if seed == args.seeds[0]:
-            clean_gap = paired_bootstrap_auroc_diff(y_test, clean_combined, score(*held["text"]), args.resamples, seed)
+            clean_gap = paired_bootstrap_auroc_diff(y_test, clean_combined, text_clean_scores, args.resamples, seed)
             attacked_gap = paired_bootstrap_auroc_diff(y_test, combined_attacked, text_attacked, args.resamples, seed)
         print(f"seed {seed} done", flush=True)
 
@@ -130,6 +145,38 @@ def main() -> None:
     print("\nprecision at a 10% flag rate")
     for name, values in precision.items():
         print(f"  {name:<20}{spread(values)['mean']:.4f}", flush=True)
+    # Confirmatory tests run on one designated split, seed args.seeds[0], and Holm controls the
+    # family-wise error rate across them. Other seeds are robustness, not independent
+    # confirmations: they are re-splits of one fixed dataset.
+    confirmatory = {name: runs[0]["p"] for name, runs in comparisons.items()}
+    holm = holm_bonferroni(confirmatory)
+    delong = {}
+    print(f"\nDeLong on the confirmatory split, seed {args.seeds[0]}, Holm across {len(confirmatory)}")
+    print(f"  {'comparison':<30}{'diff':>9}{'se':>8}{'p':>11}{'p_holm':>11}  sig")
+    for name, runs in comparisons.items():
+        first = runs[0]
+        across = spread([r["diff"] for r in runs])
+        delong[name] = {
+            "confirmatory_seed": args.seeds[0],
+            "diff": first["diff"],
+            "delong_se_within_split": first["se"],
+            "ci95_within_split": first["ci95"],
+            "p": first["p"],
+            "p_holm": holm[name]["p_holm"],
+            "significant_at_0.05": holm[name]["significant_at_alpha"],
+            "diff_across_seeds": across,
+        }
+        flag = "yes" if holm[name]["significant_at_alpha"] else "NO"
+        print(
+            f"  {name:<30}{first['diff']:>+9.4f}{first['se']:>8.4f}"
+            f"{first['p']:>11.2e}{holm[name]['p_holm']:>11.2e}  {flag}",
+            flush=True,
+        )
+    print(f"\n  {'comparison':<30}{'diff, mean +/- std across seeds':>34}")
+    for name in comparisons:
+        a = delong[name]["diff_across_seeds"]
+        print(f"  {name:<30}{a['mean']:>+22.4f} +/- {a['std']:.4f}", flush=True)
+
     print(
         f"\ncombined beats text on {wins['clean']}/{len(args.seeds)} seeds clean, "
         f"{wins['attacked']}/{len(args.seeds)} under swap_lexicon"
@@ -149,6 +196,7 @@ def main() -> None:
         "precision_at_10pct": {k: spread(v) for k, v in precision.items()},
         "combined_beats_text_seeds": wins,
         "seeds_total": len(args.seeds),
+        "delong_holm_corrected": delong,
         "combined_minus_text_clean": clean_gap,
         "combined_minus_text_attacked": attacked_gap,
         "provenance": {

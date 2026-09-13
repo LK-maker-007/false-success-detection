@@ -1,9 +1,76 @@
 from __future__ import annotations
 
-from math import comb
+from math import comb, erfc, sqrt
 
 import numpy as np
 from sklearn.metrics import roc_auc_score
+
+
+def _midrank(x: np.ndarray) -> np.ndarray:
+    order = np.argsort(x)
+    sorted_x = x[order]
+    n = len(x)
+    ranks = np.zeros(n, dtype=float)
+    i = 0
+    while i < n:
+        j = i
+        while j < n and sorted_x[j] == sorted_x[i]:
+            j += 1
+        ranks[i:j] = 0.5 * (i + j - 1) + 1
+        i = j
+    out = np.empty(n, dtype=float)
+    out[order] = ranks
+    return out
+
+
+def delong_test(y: np.ndarray, scores_a: np.ndarray, scores_b: np.ndarray) -> dict[str, float]:
+    # DeLong 1988, computed by the midrank method of Sun and Xu 2014. This is the standard test for
+    # two ROC curves scored on the same samples; a bootstrap answers the same question less directly.
+    positives = np.asarray(y) == 1
+    scores = np.vstack([np.asarray(scores_a, dtype=float), np.asarray(scores_b, dtype=float)])
+    pos, neg = scores[:, positives], scores[:, ~positives]
+    m, n = pos.shape[1], neg.shape[1]
+    if m == 0 or n == 0:
+        raise ValueError(f"DeLong needs both classes, got {m} positives and {n} negatives")
+
+    tx = np.vstack([_midrank(row) for row in pos])
+    ty = np.vstack([_midrank(row) for row in neg])
+    tz = np.vstack([_midrank(np.concatenate([pos[r], neg[r]])) for r in range(2)])
+
+    aucs = (tz[:, :m].sum(axis=1) / m - (m + 1) / 2) / n
+    v01 = (tz[:, :m] - tx) / n
+    v10 = 1.0 - (tz[:, m:] - ty) / m
+    covariance = np.cov(v01) / m + np.cov(v10) / n
+
+    contrast = np.array([1.0, -1.0])
+    variance = float(contrast @ covariance @ contrast)
+    diff = float(aucs[0] - aucs[1])
+    if variance <= 0:
+        return {"auc_a": float(aucs[0]), "auc_b": float(aucs[1]), "diff": diff, "z": 0.0, "p": 1.0}
+    z = diff / sqrt(variance)
+    return {
+        "auc_a": round(float(aucs[0]), 4),
+        "auc_b": round(float(aucs[1]), 4),
+        "diff": round(diff, 4),
+        "se": round(sqrt(variance), 4),
+        "ci95": [round(diff - 1.96 * sqrt(variance), 4), round(diff + 1.96 * sqrt(variance), 4)],
+        "z": round(z, 4),
+        "p": erfc(abs(z) / sqrt(2)),
+    }
+
+
+def holm_bonferroni(pvalues: dict[str, float], alpha: float = 0.05) -> dict[str, dict[str, float | bool]]:
+    # Holm 1979. Controls the family-wise error rate across a set of comparisons without assuming
+    # they are independent, which they are not here: the same test rows feed every one of them.
+    ordered = sorted(pvalues.items(), key=lambda kv: kv[1])
+    total = len(ordered)
+    out: dict[str, dict[str, float | bool]] = {}
+    running = 0.0
+    for rank, (name, p) in enumerate(ordered):
+        adjusted = min(1.0, max(running, (total - rank) * p))
+        running = adjusted
+        out[name] = {"p": p, "p_holm": adjusted, "significant_at_alpha": adjusted <= alpha}
+    return out
 
 
 def mcnemar_exact(decisions_a: np.ndarray, decisions_b: np.ndarray) -> dict[str, float | int]:

@@ -61,9 +61,31 @@ protocol. Stratified 70/15/15 split, TF-IDF and logistic regression, seeds 42 to
 
 [V, results/ablation.json]
 
-Adding arguments to tool names is worth +0.031. Adding structural features to the text detector
-is worth +0.0107, CI95 [0.0029, 0.0189], and wins on 10 of 10 seeds. Precision at a 10% flag rate
-rises from 0.5708 to 0.6156. [V, results/ablation.json]
+Significance is tested with DeLong on one designated confirmatory split, seed 42, with Holm
+controlling the family-wise error rate across five comparisons. Other seeds are robustness, not
+independent confirmations, since they re-split one fixed dataset.
+
+| comparison | diff | DeLong p | p after Holm | significant |
+|---|---|---|---|---|
+| combined vs text, clean | +0.0107 | 6.83e-03 | 1.37e-02 | yes |
+| combined vs text, attacked | +0.0194 | 1.87e-05 | 5.60e-05 | yes |
+| structural vs tool names | +0.0351 | 3.84e-08 | 1.53e-07 | yes |
+| structural vs arguments | +0.0122 | 1.18e-01 | 1.18e-01 | **no** |
+| text clean vs attacked | +0.0186 | 9.75e-19 | 4.88e-18 | yes |
+
+[V, results/ablation.json delong_holm_corrected]
+
+Adding arguments to tool names is significant. **Adding tool names on top of arguments is not**, at
+p 0.118 before correction. Across seeds that difference is +0.0231 +/- 0.0121, so the effect may be
+real and this split cannot show it. We report the combination because it is what we ran, and we do
+not claim it beats arguments alone.
+
+Precision at a 10% flag rate rises from 0.5708 to 0.6156. [V, results/ablation.json]
+
+Two variance sources are kept apart throughout. A DeLong standard error or a bootstrap interval
+measures sampling within one split. A `+/-` across seeds measures split variability. For the
+headline comparison these agree: +0.0107 with a within-split SE of 0.0040, against +0.0099 +/-
+0.0034 across seeds. [V, results/ablation.json]
 
 The gain is not extra model capacity. The text vectorizer saturates at 37,558 features, and
 raising its cap from 30,000 to 60,000 to 120,000 gives 0.9458, 0.9455, 0.9455.
