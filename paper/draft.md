@@ -172,7 +172,44 @@ The effect on detector scores is small. Removing harness control tokens costs th
 0.8865. Both figures are seed 42 and predate the argument features.
 [V, results/corpus_audit.json ablations]
 
-## 5. Limitations
+## 5. Related work
+
+Tool-call arguments are a well-studied source of agent failure. Our contribution is narrower than
+that literature and every qualifier below is load-bearing.
+
+**Parameter failure taxonomies.** Butterfly Effects in Toolchains derives five parameter failure
+categories and probes them with 15 input perturbations, concluding that parameter name
+hallucination stems from model limits while other patterns come from input sources
+[C, arXiv 2507.15296]. ToolScan characterises seven tool-use error types including incorrect
+argument values, names and types. These works taxonomise causes. They do not build a classifier,
+and they do not compare argument features against tool-name features for predictive performance.
+
+**Diagnostic benchmarks.** ToolFailBench measures Tool-Skip, Result-Ignore, Output-Fabrication and
+Unnecessary-Tool-Use over 1,000 single-turn tasks with mock returns, using a rule classifier and
+two LLM judges [C, arXiv 2607.04686]. It is a benchmark for characterising models, built on
+synthetic parametric traps. Ours is a detector over multi-turn traces that real agents produced on
+public leaderboards.
+
+**Trace features for silent failure.** Structural trace features, specifically path features over
+the sequence of agent, tool and LLM calls, plus token-usage features, have been used to detect
+silent failures in multi-agent trajectories [C, arXiv 2511.04032]. This is the closest work on the
+feature axis. It uses call sequence and volume, not the values passed to those calls.
+
+**Argument validation in evaluation stacks.** Production eval practice matches argument shape and
+values against a gold call. That requires the gold call. Our detector has no reference to compare
+against and predicts from the trace alone.
+
+**Where most parameter work differs from ours.** The failures above are largely calls that fail:
+malformed JSON, a hallucinated parameter name, a value the API rejects. The false successes we
+study are calls that *succeed*. Their arguments are well-formed and accepted, and they are the
+wrong values. Butterfly Effects contains one example of this kind, a region set to "US" for a
+query about Australia, but treats it as one category among five rather than as the dominant mode.
+
+Stated precisely, our claim is: **tool-call argument features predict task-level failure better
+than tool-name or endpoint features, at inference time, without a gold reference, on two
+multi-turn agent benchmarks.**
+
+## 6. Limitations
 
 **Scope.** This work is about a claim of task completion contradicted by verifiable environment
 state. It says nothing about factual hallucination, reasoning quality, or research agents that
@@ -195,7 +232,7 @@ same sample. Direct numeric comparison with the reference AUROC is not valid.
 redistribution of them or their derivatives be in encrypted form. Extracted trajectories cannot be
 shipped.
 
-## 6. Reproduction
+## 7. Reproduction
 
 Corpus pin, which the reference work does not have:
 
@@ -207,7 +244,7 @@ Corpus pin, which the reference work does not have:
 Environment: python 3.12.3, scikit-learn 1.5.2, numpy 2.5.3. Every table above is produced by one
 committed script writing one JSON file under `results/`.
 
-## 7. Scripts
+## 8. Scripts
 
 | section | script | results file |
 |---|---|---|
@@ -222,7 +259,7 @@ committed script writing one JSON file under `results/`.
 Data acquisition: `scripts/fetch_tau2.py` for tau2, and for AppWorld a git-lfs clone of
 `StonyBrookNLP/appworld-leaderboard` unpacked with `appworld unpack`.
 
-## 8. Open
+## 9. Open
 
 - Does the finding hold with a model-generated attacker rather than rule-based rewriters?
 - Does it hold on a third benchmark with a different action representation?
