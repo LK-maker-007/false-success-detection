@@ -1,0 +1,55 @@
+{
+ "airline": {
+  "trajectories": 2250,
+  "failures": 699,
+  "false_successes": 327,
+  "fs_share_of_failures": 0.4678,
+  "fs_share_of_all": 0.1453,
+  "empty_communicate_gate": 1980,
+  "empty_communicate_share": 0.88,
+  "issue_384_tasks": 23,
+  "trajectories_on_384_list": 1035,
+  "share_on_384_list": 0.46
+ },
+ "retail": {
+  "trajectories": 5075,
+  "failures": 1189,
+  "false_successes": 510,
+  "fs_share_of_failures": 0.4289,
+  "fs_share_of_all": 0.1005,
+  "empty_communicate_gate": 1596,
+  "empty_communicate_share": 0.3145,
+  "issue_384_tasks": 6,
+  "trajectories_on_384_list": 269,
+  "share_on_384_list": 0.053
+ },
+ "telecom": {
+  "trajectories": 5534,
+  "failures": 1554,
+  "false_successes": 14,
+  "fs_share_of_failures": 0.009,
+  "fs_share_of_all": 0.0025,
+  "empty_communicate_gate": 0,
+  "empty_communicate_share": 0.0,
+  "issue_384_tasks": 0,
+  "trajectories_on_384_list": 0,
+  "share_on_384_list": 0.0
+ },
+ "summary": {
+  "single_control_fs_share_of_failures": 0.4433,
+  "dual_control_fs_share_of_failures": 0.009,
+  "ratio": 49.26,
+  "confound": "the two single-control domains are the two named in tau2-bench issue #384 as having reward gates that auto-pass; telecom is named nowhere in it. Control mode and evaluator validity are perfectly collinear across the three domains, so this comparison cannot attribute the difference to either."
+ },
+ "provenance": {
+  "data_dir": "data/tau2",
+  "records": 12859,
+  "dropped": {
+   "missing_reward": 0,
+   "no_messages": 107,
+   "no_assistant_turn": 0
+  },
+  "issue": "https://github.com/sierra-research/tau2-bench/issues/384",
+  "python": "3.12.3"
+ }
+}
