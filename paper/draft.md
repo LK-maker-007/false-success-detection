@@ -1,5 +1,8 @@
 # What false success in LLM agents actually is, and what detects it
 
+> **Status: Superseded / Project Halted.**
+> The central claim below (that tool-call arguments outperform tool names) was an artifact of task leakage in the train/test split. When evaluated under strict task-disjoint splits, the difference collapses to -0.0045 (AUROC 0.8247 vs 0.8292, p = 0.868, 5/10 seed wins). See `results/protocol.json` and the audit reports in `review/`. The project was stopped at this point rather than published on flawed splits.
+
 Draft. Every number carries [V] verified this session with the script that produced it, [C] cited
 to a published source, or [H] hypothesis. Untagged numbers are defects.
 
