@@ -13,10 +13,9 @@ to a published source, or [H] hypothesis. Untagged numbers are defects.
 An LLM agent fails silently when it closes by asserting a task is complete and the environment
 state disagrees. On two agent benchmarks we find that this failure is almost never an agent
 claiming an action it never attempted. It is an agent performing the right operation with the
-wrong arguments, or completing some of the required steps. We show that features taken from
-tool-call arguments detect it better than features taken from tool names or API endpoints, on
-tau2-bench (+0.031 AUROC, 10/10 seeds) and on AppWorld (+0.036 AUROC, 10/10 seeds, held out by
-submission). We also report two defects in how the field measures this: the corpus behind the
+wrong arguments, or completing some of the required steps. Under random splits, features taken from
+tool-call arguments appeared to detect it better than tool names (superseded under task-disjoint evaluation, see status note above).
+We also report two defects in how the field measures this: the corpus behind the
 reference result cannot be reconstructed from the source it names, and tau2-bench's reward
 auto-passes a gate on 88% of airline simulations.
 
